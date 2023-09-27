@@ -1,1 +1,74 @@
 //Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+//Resolution Details 
+ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
+Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required. 
+
+ServiceNow hat die Anwendung „ACL Assessment for Reports“ bereitgestellt, um Ihre Instanz zu scannen und eine Bestandsaufnahme der Berichte und Benutzer zu erstellen, die betroffen sind, wenn die Berichtsansichts-ACLs aktiviert sind.
+Installieren Sie die Anwendung „ACL Assessment for Reports“ aus dem ServiceNow-Store. Die Rolle „Sicherheitsadministrator“ ist erforderlich.
+
+//Script
+(function (finding) {
+
+	if (!GlidePluginManager.isActive("sn_report_acl")) {
+		finding.increment();
+	}
+
+})(finding);
+
+
+//Result ChatGPT
+The code snippet you provided appears to be a JavaScript function that takes an argument called "finding" and checks if a Glide plugin named "sn_report_acl" is active using GlidePluginManager. 
+If the "sn_report_acl" plugin is not active, it increments the value of "finding."
+Here's a breakdown of what this code does:
+It defines an anonymous function that takes a single parameter called "finding."
+Inside the function, it checks if the "sn_report_acl" plugin is active by calling GlidePluginManager.isActive("sn_report_acl"). 
+The GlidePluginManager is likely part of a larger system or framework (possibly related to ServiceNow) and is used to manage plugins.
+If the "sn_report_acl" plugin is not active (the ! operator negates the result), it increments the value of the "finding" variable. 
+This suggests that "finding" is likely a counter or a variable that keeps track of some kind of issue or finding.
+The function is immediately invoked (wrapped in parentheses and followed by (finding)), which means it will be executed as soon as it's defined. 
+The "finding" variable is passed as an argument to the function.
+The specific purpose and context of this code may depend on the larger codebase it is a part of. 
+It seems to be related to managing plugin activation and possibly tracking findings or issues related to plugin management.
+
+
+//User
+Write for me a solution script
+
+//ChatGPT
+Certainly! To provide you with a solution script, I would need more context about what you're trying to achieve. 
+However, I can give you a general structure for a JavaScript function that you can adapt to your specific needs. 
+Please provide more details about your requirements, and I'll be happy to assist you further. Here's a template for a JavaScript function:
+
+javascript
+    Copy code
+    function managePlugin(finding) {
+      // Check if the "sn_report_acl" plugin is active
+      if (!GlidePluginManager.isActive("sn_report_acl")) {
+        // If not active, perform actions or increment finding
+        finding.increment();
+        // You can add more code here to handle the case when the plugin is not active
+      } else {
+        // Plugin is active, perform other actions if needed
+        // You can add more code here to handle the case when the plugin is active
+      }
+    }
+
+    // Example usage:
+    var finding = {
+      increment: function () {
+        // Implement your increment logic here
+        // For example: findingCount++;
+      }
+    };
+    
+    // Call the function with the 'finding' object
+    managePlugin(finding);
+
+In this template:
+The managePlugin function takes a "finding" object as a parameter. 
+Inside the function, it checks if the "sn_report_acl" plugin is active using GlidePluginManager.isActive.
+If the plugin is not active, it increments the "finding" object (you should implement your specific logic for incrementing findings).
+You can customize the code inside the function to perform any actions or logic you need when the plugin is active or not active.
+Finally, an example of how to use the managePlugin function is provided. You would create your "finding" object and call the function with it.
+Please provide more details or specific requirements if you need further assistance with your script.
