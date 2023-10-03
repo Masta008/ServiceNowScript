@@ -1,0 +1,90 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Reports shared with a role which does not exist might lead to unforeseen behaviour. Once a role with this name is created, immediately all the reports are shared with this role.
+
+//ServiceNow Field: "Resolution Details"
+Reports shared with a role which does not exist might lead to unforeseen behaviour, once a role with this name is created and immediately all the reports are shared with this role. Consider removing the role by editing the report and only share the report with valid roles.
+
+//ServiceNow Field "Script"
+(function(finding, current) {
+
+    var list = current.roles.split(',');
+    for (var i = 0; i < list.length; i++) {
+        var validator = new GlideRecord('sys_user_role');
+        if (!validator.get('name', list[i])) {
+            finding.increment();
+        }
+    }
+
+})(finding, current);
+
+//Answer ChatGPT
+The provided code snippet appears to be a script written in the ServiceNow platform's scripting language, likely executed as part of a business rule or script include. This script is designed to check if a report is shared with any roles that do not exist in the "sys_user_role" table. If any non-existent roles are found, it increments a counter, likely for the purpose of generating a finding or an alert.
+
+Here's a breakdown of what the code does:
+
+    It takes two parameters: finding and current. These are presumably objects or variables representing the context and a finding counter.
+
+    It splits the roles listed in the current.roles field (assuming current represents a record, possibly a report) using a comma as the delimiter. This splits the roles into an array.
+
+    It then iterates through the array of roles using a for loop.
+
+    Inside the loop, it creates a GlideRecord object named validator for the "sys_user_role" table and attempts to retrieve a record with the "name" field matching the current role in the loop.
+
+    If a record with the current role name is not found in the "sys_user_role" table, it increments the finding counter.
+
+Overall, this script is used to identify and count roles that are associated with a report but do not exist in the "sys_user_role" table. This is important for maintaining data integrity and ensuring that only valid roles have access to reports.
+
+The script suggests that if you find any non-existent roles, you should consider removing them from the report's sharing settings by editing the report. This is a good practice to avoid unforeseen behavior when roles are eventually created with the same names.
+
+Remember that this script should be executed in the appropriate context within ServiceNow, and the "finding" and "current" objects should be provided as arguments when the script is invoked.
+
+//User
+Write me a solution script
+
+
+//Answer ChatGPT
+Certainly, if you want to create a script that identifies reports shared with roles that do not exist in the "sys_user_role" table and remove those invalid role associations, you can use the following ServiceNow script:
+
+javascript
+
+(function(current) {
+    // Split the roles associated with the current report
+    var roles = current.roles.split(',');
+
+    // Create an array to store valid roles
+    var validRoles = [];
+
+    // Iterate through the roles and check if they exist in the sys_user_role table
+    for (var i = 0; i < roles.length; i++) {
+        var roleName = roles[i].trim(); // Remove leading/trailing spaces
+        var roleGR = new GlideRecord('sys_user_role');
+        roleGR.addQuery('name', roleName);
+        roleGR.query();
+
+        if (roleGR.next()) {
+            // Role exists, add it to the list of valid roles
+            validRoles.push(roleName);
+        } else {
+            // Role doesn't exist, you can log this information or take other actions
+            gs.log("Role '" + roleName + "' does not exist in sys_user_role table.");
+        }
+    }
+
+    // Update the report's roles with only the valid roles
+    current.roles = validRoles.join(',');
+})(current);
+
+This script performs the following actions:
+
+    Splits the roles associated with the current report based on commas.
+    Iterates through each role, checking if it exists in the "sys_user_role" table.
+    If a role exists, it adds it to the validRoles array.
+    If a role does not exist, it logs a message indicating that the role is invalid.
+    Finally, it updates the report's roles with only the valid roles by joining them with commas.
+
+Please note that this script focuses on checking and filtering roles within a single report record. You can trigger this script when a report is saved or shared, depending on your specific requirements and use cases. Additionally, you can modify the script to take additional actions, such as sending notifications or performing cleanup tasks for invalid roles.
