@@ -1,0 +1,92 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Checks to see if the UI Action can be accessed by a user with no roles who does not have read access to the table.
+
+//ServiceNow Field: "Resolution Details"
+Use conditions or visibility criteria to restrict access to UI Actions.
+
+//ServiceNow Field "Script"
+(function(finding, current) {
+
+    var found = true;
+    var gr = new GlideRecord("sys_ui_action_view");
+    gr.addQuery('sys_ui_action', current.sys_id);
+    gr.query();
+    if (gr.next()) {
+        found = false;
+    }
+    if (JSUtil.notNil(current.condition)) {
+        if (current.condition.includes("gs.hasRole")) {
+            found = false;
+        }
+    }
+
+    var gr2 = new GlideRecord('sys_ui_action_role');
+    gr2.addQuery('sys_ui_action', current.sys_id);
+    gr2.query();
+    if (gr2.next()) {
+        found = false;
+    }
+    if (found) {
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+
+})(finding, current);
+
+//Answer ChatGPT
+The script you provided is checking if a UI Action can be accessed by a user with no roles who does not have read access to the table. It uses conditions and visibility criteria to restrict access to the UI Action. Here's an explanation of the script:
+
+    It initializes a variable found to true, indicating that by default, the UI Action is accessible.
+
+    It creates a GlideRecord gr to query the "sys_ui_action_view" table and checks if there is a record with the same sys_id as the current UI Action. If such a record exists, it sets found to false. This means that if there is an entry in the "sys_ui_action_view" table for the current UI Action, it's not accessible.
+
+    It checks if the UI Action has a condition specified (current.condition) and if that condition includes the string "gs.hasRole". If it does, it sets found to false. This means that if the UI Action has a condition that checks for roles, it's not accessible to users with no roles.
+
+    It creates another GlideRecord gr2 to query the "sys_ui_action_role" table and checks if there is a record with the same sys_id as the current UI Action. If such a record exists, it sets found to false. This means that if there is an entry in the "sys_ui_action_role" table for the current UI Action, it's not accessible.
+
+    Finally, if found is still true after all the checks, it increments a finding counter to indicate that the UI Action is accessible.
+
+In summary, this script is used to determine whether a UI Action should be accessible based on the presence of related records in the "sys_ui_action_view" and "sys_ui_action_role" tables and the presence of a "gs.hasRole" condition. If none of these conditions are met, the UI Action is considered accessible.
+
+
+//User
+Write me a solution script
+
+
+//Answer ChatGPT
+If you want to write a solution script that restricts access to a UI Action based on certain conditions, you can use server-side scripting in ServiceNow. Here's an example of a script that you can use as a starting point:
+
+javascript
+
+(function executeRule(current, previous /*, display*/ ) {
+    // Check if the user has any roles
+    var hasRoles = gs.hasRole();
+
+    // Check if the user has read access to the table associated with the UI Action
+    var table = current.getTableName();
+    var canRead = gs.hasRightsTo(table, 'read');
+
+    // Check any other conditions you may have
+    var customCondition = true; // Modify this condition as needed
+
+    // If any condition fails, restrict access to the UI Action
+    if (!hasRoles || !canRead || !customCondition) {
+        gs.addInfoMessage("You do not have permission to access this UI Action.");
+        current.setAbortAction(true);
+    }
+})(current, previous);
+
+This script checks three conditions:
+
+    Whether the user has any roles (hasRoles).
+    Whether the user has read access to the table associated with the UI Action (canRead).
+    Any custom condition you may have (customCondition). You can modify this part of the script to add your specific conditions.
+
+If any of these conditions fail, it adds an informational message to the UI using gs.addInfoMessage, and it sets setAbortAction(true) to prevent the UI Action from executing.
+
+Please note that you may need to customize this script further based on your specific requirements and the structure of your ServiceNow instance. Additionally, ensure that you have the appropriate permissions to create and modify UI Actions and scripts in your ServiceNow environment.
