@@ -1,0 +1,97 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+
+//ServiceNow Field: "Resolution Details"
+UI Pages making call to server side code should have ACL's implemented.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+	
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','ui_page');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+
+})(finding, current);
+
+//Answer ChatGPT
+The code you've provided appears to be a script used to check whether a UI Page has an associated ACL (Access Control List) implemented. It checks if an ACL exists for the UI Page specified in the 'current' variable, and if not, it increments a 'finding' variable, presumably to log the issue.
+
+You are correct in your assessment that UI Pages should have proper ACLs implemented to control access. Without ACLs, UI Pages can be accessed by all logged-in internal users, which can pose security risks.
+
+To address your concerns about users being able to change passwords without proper authorization, it's essential to implement proper ACLs and script-level authorization checks where needed. Here are some general steps you can take:
+
+    Implement ACLs: Create ACLs for your UI Pages and define the necessary permissions and conditions to restrict access based on user roles, groups, or other criteria. This will ensure that only authorized users can access the page.
+
+    Script-Level Authorization: Use script-level authorization checks like gs.hasRole('user_admin') or other conditions to further restrict access to specific functionality within the UI Page. For example, if you have a password change functionality, only users with the appropriate role should be allowed to access it.
+
+    Test and Review: Regularly test and review your ACLs and authorization checks to ensure that they are working as intended. Conduct security audits to identify and fix potential vulnerabilities.
+
+    Follow Best Practices: Follow best practices for implementing security in ServiceNow, such as the Principle of Least Privilege, to ensure that users have only the minimum permissions necessary to perform their tasks.
+
+By implementing these security measures, you can better control access to your UI Pages and prevent unauthorized actions, such as changing passwords without proper authorization.
+
+
+//User
+Write me a solution script
+
+
+//Answer ChatGPT
+Certainly! Here's an example of a solution script that checks if a user has the 'user_admin' role before allowing them to change passwords on a UI Page. This script assumes you have implemented ACLs for your UI Page to control access, and it's a server-side script to be used within the UI Page's script include or client controller script:
+
+javascript
+
+(function () {
+    // Check if the current user has the 'user_admin' role
+    var currentUser = gs.getUser();
+    if (!currentUser.hasRole('user_admin')) {
+        // If the user does not have the 'user_admin' role, deny access
+        gs.addErrorMessage('You do not have permission to change passwords.');
+        // Redirect or handle the denial appropriately, e.g., redirect to an error page
+        // For example, you can use:
+        // action.setRedirectURL('error_page');
+        // return;
+    }
+
+    // If the user has the 'user_admin' role or other necessary permissions, continue with password change logic
+
+    // Your password change logic goes here
+
+    // Example: Updating the password for a user with a specific sys_id
+    var userSysID = '1234567890abcdef1234567890abcdef'; // Replace with the actual sys_id of the user
+    var newPassword = 'new_password'; // Replace with the new password
+
+    var userGR = new GlideRecord('sys_user');
+    if (userGR.get(userSysID)) {
+        userGR.password = newPassword;
+        userGR.update();
+        gs.addInfoMessage('Password changed successfully.');
+    } else {
+        gs.addErrorMessage('User not found.');
+    }
+
+    // Redirect or handle the success appropriately, e.g., redirect to a success page
+    // For example, you can use:
+    // action.setRedirectURL('success_page');
+})();
+
+In this script:
+
+    It first checks if the current user has the 'user_admin' role using currentUser.hasRole('user_admin').
+
+    If the user doesn't have the 'user_admin' role, it adds an error message and can redirect the user to an error page or take other appropriate actions.
+
+    If the user has the 'user_admin' role, it continues with the password change logic. In this example, it updates the password for a specific user (replace 'userSysID' and 'newPassword' with actual values).
+
+    After changing the password, it adds a success message and can redirect the user to a success page or take other appropriate actions.
+
+Make sure to integrate this script into your UI Page logic and adapt it to your specific use case and security requirements. Additionally, ensure that proper ACLs are in place to control access to the UI Page itself.
