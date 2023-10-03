@@ -1,0 +1,95 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Planned Start and End date of change records are very sensitive and should be protected.  UI Policies applied to the date fields on the form are not effecitve because users can still update it for example in list view.
+
+//ServiceNow Field: "Resolution Details"
+It is recommended to use ACLs to secure those date fields rather than UI Policies.  If ACLs are already existing then there is no need to use the UI Policy.
+
+//ServiceNow Field "Script"
+xxx
+
+//Answer ChatGPT
+Protecting sensitive data like planned start and end dates in change records is crucial for maintaining data integrity and security. While UI Policies can be helpful in controlling the visibility and behavior of fields on a form, they may not provide sufficient protection in all scenarios, especially when users can bypass them in list views or other ways.
+
+Access Control Lists (ACLs) are a more robust way to enforce security rules on fields and records. ACLs allow you to define fine-grained access controls, including read, write, create, and delete permissions, based on various conditions. By configuring ACLs properly, you can restrict access to specific fields like planned start and end dates, ensuring that only authorized users or roles can modify them.
+
+Here's how you can use ACLs to secure these date fields:
+
+    Identify the tables and fields: Determine which tables and fields contain the sensitive date information. In your case, it's the change records table and the planned start and end date fields.
+
+    Create ACLs: In your application or system, create the necessary ACLs to control access to these fields. You can define ACL rules that specify who can read or write to these fields based on roles, conditions, or any other criteria.
+
+    Test and refine ACLs: Before deploying ACLs in a production environment, thoroughly test them to ensure they work as expected. Make sure that only authorized users or roles can access and modify the date fields.
+
+    Remove or adjust UI Policies: If you had previously used UI Policies to control these date fields, you can consider removing them or adjusting them to provide a better user experience. For example, you can use UI Policies to make the fields read-only for users who don't have write access based on ACL rules, providing a visual indication of restricted access.
+
+In summary, ACLs are a recommended approach for securing sensitive data fields like planned start and end dates in change records, as they provide more comprehensive control over field access compared to UI Policies. If ACLs are already in place, you can rely on them and potentially adjust any existing UI Policies to complement the ACL-based security measures.
+
+//User
+Write me a solution script
+
+
+//Answer ChatGPT
+To implement Access Control Lists (ACLs) to secure sensitive date fields like planned start and end dates in change records, you need to configure ACL rules in your system. The exact steps and syntax may vary depending on the system you're using (e.g., ServiceNow, Salesforce, or a custom application). Below is a generic example script to give you an idea of how to set up ACL rules. Please adapt it to your specific system's requirements.
+
+javascript
+
+// Example ACL Script to Secure Planned Start and End Dates in Change Records
+
+// Define the table and field names
+var tableName = 'change_record_table';
+var startDateField = 'planned_start_date';
+var endDateField = 'planned_end_date';
+
+// Define ACL rule for restricting write access to the fields
+var writeACL = {
+  name: 'Restrict Write Access to Planned Dates',
+  description: 'Prevent unauthorized users from writing to planned start and end dates',
+  appliesToTable: tableName,
+  operation: 'insert,update',
+  condition: 'current.user.hasRole("Change_Manager")', // Adjust the condition as needed
+  script: function (gr) {
+    // Check if the user has the necessary role to write to the fields
+    if (!gr[endDateField].changes() && !gr[startDateField].changes()) {
+      // User does not have the role and is trying to modify the fields
+      gr.setAbortAction(true); // Prevent the update
+      gs.addErrorMessage('You do not have permission to modify planned dates.');
+    }
+  },
+};
+
+// Define ACL rule for restricting read access to the fields
+var readACL = {
+  name: 'Restrict Read Access to Planned Dates',
+  description: 'Prevent unauthorized users from reading planned start and end dates',
+  appliesToTable: tableName,
+  operation: 'read',
+  condition: 'current.user.hasRole("Change_Manager")', // Adjust the condition as needed
+  script: function (gr) {
+    // Check if the user has the necessary role to read the fields
+    if (!gr[endDateField].changes() && !gr[startDateField].changes()) {
+      // User does not have the role and is trying to read the fields
+      gr.setAbortAction(true); // Prevent the read
+      gs.addErrorMessage('You do not have permission to view planned dates.');
+    }
+  },
+};
+
+// Create ACL rules
+var writeACLRecord = new GlideACL(writeACL);
+var readACLRecord = new GlideACL(readACL);
+
+writeACLRecord.insert();
+readACLRecord.insert();
+
+This script includes two ACL rules:
+
+    writeACL: Prevents unauthorized users from writing (modifying) the planned start and end dates. It checks if the user has the "Change_Manager" role before allowing updates.
+
+    readACL: Prevents unauthorized users from reading (viewing) the planned start and end dates. It also checks for the "Change_Manager" role before allowing access.
+
+Please customize the tableName, startDateField, endDateField, and role conditions according to your specific application and requirements. Additionally, ensure that you have the necessary permissions and privileges to create and manage ACLs in your system.
