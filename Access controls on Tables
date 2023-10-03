@@ -4,19 +4,92 @@
 
 //User 
 /ServiceNow Field: "Description"
-
+Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
 //ServiceNow Field: "Resolution Details"
-
+Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
 
 //ServiceNow Field "Script"
+(function (finding, current) {
+	
+    var g_acl = new GlideRecord('sys_security_acl');
+		g_acl.addQuery('name','CONTAINS',current.name);
+		g_acl.query();
+		if(!g_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
 
+})(finding, current);
 
 //Answer ChatGPT
+The code snippet you've provided appears to be a JavaScript function that interacts with the ServiceNow platform's GlideRecord API to manage access control lists (ACLs). It looks like you want to ensure that all tables have ACLs, and if a table does not have an ACL, you increment a finding. This code seems to be part of a larger script or process aimed at ensuring proper access control within your ServiceNow instance.
 
+Here's a brief breakdown of what the code does:
+
+    It defines a JavaScript function that takes two parameters: finding and current. These parameters are likely used to keep track of findings or results in some audit or compliance process.
+
+    Inside the function, it creates a new GlideRecord object called g_acl for the 'sys_security_acl' table. This is a ServiceNow table that stores information about access control lists (ACLs).
+
+    It then adds a query to the GlideRecord object, searching for ACLs where the 'name' field contains the value of current.name. current.name is likely a reference to the name of the table you are currently examining.
+
+    The code executes the query using g_acl.query().
+
+    If there are no results in the g_acl GlideRecord (i.e., no ACLs found for the current table), it sets the source of the finding object to the current record and increments the finding count. This suggests that the code is tracking instances where tables lack ACLs, possibly for auditing or compliance purposes.
+
+    It's important to note that this code is likely part of a larger script or workflow within ServiceNow, and how it fits into the broader context would determine its exact purpose.
+
+If you have specific questions or need further assistance with this code or its integration into your ServiceNow instance, please provide additional details about your use case or requirements.
 
 //User
 Write me a solution script
 
-
 //Answer ChatGPT
+To implement a script in ServiceNow that enforces access control lists (ACLs) for all tables and ensures that every table has an ACL defined, you can create a scripted background job. This job can query the ServiceNow dictionary to identify tables without ACLs and then create ACLs for them. Here's a simplified example of such a script:
+
+javascript
+
+(function () {
+    // Define a function to create an ACL for a given table
+    function createTableACL(tableName) {
+        var acl = new GlideRecord('sys_security_acl');
+        acl.initialize();
+        acl.setValue('name', 'Table ' + tableName + ' ACL');
+        acl.setValue('description', 'ACL for ' + tableName);
+        acl.setValue('active', true);
+        acl.setValue('operation', 'read');
+        acl.insert();
+    }
+
+    // Query the ServiceNow dictionary to get a list of tables
+    var dictionary = new GlideRecord('sys_dictionary');
+    dictionary.addQuery('internal_type', 'collection');
+    dictionary.query();
+
+    // Loop through the tables and check if they have an ACL
+    while (dictionary.next()) {
+        var tableName = dictionary.name.toString();
+        var acl = new GlideRecord('sys_security_acl');
+        acl.addQuery('name', 'CONTAINS', 'Table ' + tableName + ' ACL');
+        acl.query();
+
+        if (!acl.next()) {
+            // Create an ACL for the table if it doesn't exist
+            createTableACL(tableName);
+        }
+    }
+})();
+
+Please note that this is a simplified example for demonstration purposes. In a real-world scenario, you should consider additional factors such as specifying more granular ACL permissions, handling exceptions, logging, and ensuring that the ACLs meet your specific security requirements.
+
+Here's how you can use this script:
+
+    Go to the "Scripts - Background" module in your ServiceNow instance.
+
+    Create a new script record.
+
+    Paste the script provided above into the script field.
+
+    Save the script and execute it as a background job.
+
+This script will check each table in the ServiceNow dictionary, and if it finds a table without an ACL, it will create a basic read ACL for that table. You can customize the ACL creation logic and permissions as needed to align with your security policies. Additionally, it's crucial to thoroughly test any script in a non-production environment before deploying it in a production setting.
