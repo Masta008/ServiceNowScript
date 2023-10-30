@@ -1,0 +1,20 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.
+
+//ServiceNow Field: "Resolution Details"
+ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
+Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required. 
+
+//ServiceNow Field "Script"
+(function (finding) {
+
+    if(!GlidePluginManager.isActive("sn_report_acl")){
+		finding.increment();
+	}
+
+})(finding);
