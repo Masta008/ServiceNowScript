@@ -11,48 +11,37 @@ Rules for access control lists (ACLs) restrict access to data by requiring users
 //ServiceNow Field: "Resolution Details"
 Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
-//ServiceNow Field "Script"
-(function (finding, current) {
-    var gr_acl = new GlideRecord('sys_security_acl');
-		gr_acl.addQuery('type','client_callable_script_include');
-		gr_acl.addQuery('name','CONTAINS',current.name);
-		gr_acl.query();
-		if(!gr_acl.next()){
-			finding.setCurrentSource(current);
-			finding.increment();
-		}
-})(finding, current);
-
-It seems like you want to create an Access Control List (ACL) in ServiceNow to secure a client callable script include and restrict access to it based on the required roles. You provided a script that checks if an ACL exists for the given client callable script include and increments a finding if it doesn't. Below is a JavaScript solution that you can use to create this ACL in ServiceNow:
+//Answer
+To address the ServiceNow request for creating an Access Control List (ACL) for a Client Callable Script Include (CCSI), you can use JavaScript to create the ACL. Below is a JavaScript script that you can use in your ServiceNow instance to define the required roles for accessing a Client Callable Script Include. Please note that this script should be run in a ServiceNow environment with administrative privileges:
 
 javascript
 Copy code
-(function () {
-    var scriptIncludeName = 'YourScriptIncludeName'; // Replace with your script include name
-    var aclName = 'ACL_Name_For_Script_Include'; // Replace with a meaningful ACL name
-    var requiredRoles = 'snc_internal'; // Replace with the required roles
+// Define the name of the Client Callable Script Include
+var scriptIncludeName = 'YourClientCallableScriptIncludeName';
 
-    // Create or update the ACL for the script include
-    var acl = new GlideAccessControlList();
-    if (acl.get('name', aclName) && acl.get('operation', 'client_script')) {
-        // ACL already exists, update it
-        acl.setValue('description', 'ACL for ' + scriptIncludeName);
-        acl.setValue('roles', requiredRoles);
-        acl.update();
-    } else {
-        // ACL doesn't exist, create it
-        acl.initialize();
-        acl.setValue('name', aclName);
-        acl.setValue('description', 'ACL for ' + scriptIncludeName);
-        acl.setValue('script', scriptIncludeName);
-        acl.setValue('operation', 'client_script');
-        acl.setValue('roles', requiredRoles);
-        acl.insert();
-    }
-})();
-Here's how to use this script:
+// Define the required roles for accessing the Client Callable Script Include
+var requiredRoles = ['snc_internal']; // You can add more roles as needed
 
-Replace 'YourScriptIncludeName' with the name of your client callable script include.
-Replace 'ACL_Name_For_Script_Include' with a meaningful name for the ACL.
-Replace 'snc_internal' with the required roles for access.
-This script checks if the specified ACL for the given client callable script include already exists. If it exists, it updates the existing ACL; if not, it creates a new ACL. This ACL will restrict access to the script include based on the specified required roles.
+// Create an ACL record for the Client Callable Script Include
+var acl = new GlideRecord('sys_security_acl');
+acl.initialize();
+acl.setValue('name', 'ACL for ' + scriptIncludeName);
+acl.setValue('operation', 'execute');
+acl.setValue('script_include', scriptIncludeName);
+acl.setValue('script', 'current');
+acl.insert();
+
+// Attach the required roles to the ACL record
+for (var i = 0; i < requiredRoles.length; i++) {
+    var role = requiredRoles[i];
+    var aclRole = new GlideRecord('sys_security_acl_role');
+    aclRole.initialize();
+    aclRole.setValue('acl', acl.sys_id);
+    aclRole.setValue('role', role);
+    aclRole.insert();
+}
+
+gs.print('ACL created and roles attached for ' + scriptIncludeName);
+Please make sure to replace 'YourClientCallableScriptIncludeName' with the actual name of your Client Callable Script Include, and adjust the requiredRoles array to include the roles that should have access to it.
+
+After running this script, an ACL will be created for your Client Callable Script Include, and the specified roles will be granted access to it. This helps secure your Client Callable Script Include by restricting access to authorized users only.
