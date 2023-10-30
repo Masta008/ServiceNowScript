@@ -11,11 +11,30 @@ ServiceNow administrators need to enable Report View ACLs to ensure data remains
 ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
 Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required. 
 
-//ServiceNow Field "Script"
-(function (finding) {
+//Answer
+To automate the ServiceNow request for enabling Report View ACLs, you can use JavaScript in a script include or background script. Below is a JavaScript script that simulates the steps needed to fulfill the request, including updating the "Description" and "Resolution Details" fields:
 
-    if(!GlidePluginManager.isActive("sn_report_acl")){
-		finding.increment();
-	}
+javascript
+Copy code
+// User input: Specify the relevant table name and record sys_id
+var tableName = "incident"; // Replace with your table name
+var recordSysID = "your_record_sys_id"; // Replace with the actual record sys_id
 
-})(finding);
+// ServiceNow Field: "Description"
+var newDescription = "ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.";
+
+// ServiceNow Field: "Resolution Details"
+var newResolutionDetails = "ServiceNow has provided the ACL Assessment for Reports application to scan your instance and produce an inventory of reports and users that will be affected when the Report View ACLs are enabled. Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required.";
+
+// Update the incident record with the new information
+var gr = new GlideRecord(tableName);
+if (gr.get(recordSysID)) {
+    gr.setValue('description', newDescription);
+    gr.setValue('resolution_details', newResolutionDetails);
+    gr.update();
+
+    gs.log("ServiceNow Request Updated: Report View ACLs Enabled");
+} else {
+    gs.log("ServiceNow Request Not Found");
+}
+Make sure to replace tableName and recordSysID with the appropriate values for your ServiceNow request. This script will update the "Description" and "Resolution Details" fields with the provided information. Please ensure that you have the necessary permissions to modify records in your ServiceNow instance when executing this script.
