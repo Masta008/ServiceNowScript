@@ -10,75 +10,34 @@ When there is no ACL for an UI Page, by default the UI Page can be accessed by a
 //"Resolution Details"
 UI Pages making call to server side code should have ACL's implemented.
 
-//"Script"
-(function (finding, current) {
-	
-    var gr_acl = new GlideRecord('sys_security_acl');
-		gr_acl.addQuery('type','ui_page');
-		gr_acl.addQuery('name','CONTAINS',current.name);
-		gr_acl.query();
-		if(!gr_acl.next()){
-			finding.setCurrentSource(current);
-			finding.increment();
-		}
-
-})(finding, current);
-
 //Answer
-To address the ServiceNow request, you can create a server-side script that enforces ACL-like access control for UI Pages. In ServiceNow, you can implement such logic using Script Includes. Here's a JavaScript script solution that enforces access control for UI Pages in ServiceNow:
-
-Create a new Script Include in ServiceNow by navigating to "System Definition" -> "Script Includes."
-
-Create a new Script Include, for example, named "CustomUIAccessControl."
-
-In the "CustomUIAccessControl" Script Include, you can add the following code:
+To address the ServiceNow request, you need to ensure that UI Pages have ACLs implemented to control access. You can create an ACL (Access Control List) for your UI Page to restrict access based on specific conditions. In your case, you want to restrict access to users who have specific roles or permissions. Below is a JavaScript script that you can use to create an ACL for a UI Page in ServiceNow:
 
 javascript
 Copy code
-var CustomUIAccessControl = Class.create();
-CustomUIAccessControl.prototype = {
-  initialize: function() {},
+// Set the name of your UI Page and the roles that should have access
+var uiPageName = 'your_ui_page_name';
+var allowedRoles = ['user_admin', 'other_required_roles'];
 
-  // Function to check access control for a UI Page
-  checkAccess: function(userSysId, pageName) {
-    // Check if the user has a specific role (e.g., 'user_admin') or other authorization checks.
-    if (!gs.hasRole('user_admin')) {
-      // Deny access to the UI Page
-      gs.log("Access denied for user: " + userSysId + " to UI Page: " + pageName);
-      return false;
-    }
-    
-    // Implement additional ACL-like checks or conditions as needed.
-
-    // Allow access if no restrictions are met
-    return true;
-  },
-
-  type: 'CustomUIAccessControl'
-};
-Save the Script Include.
-
-Now, for each UI Page in ServiceNow, you should define a script that checks access using the CustomUIAccessControl Script Include. Here's an example of how you can implement this within your UI Page server script:
-
-javascript
-Copy code
-// Include the CustomUIAccessControl script include
-var uiAccessControl = new CustomUIAccessControl();
-
-// Get the user's sys_id (you may need to adjust how you get this)
-var userSysId = gs.getUser().getID();
-var pageName = 'your_ui_page_name'; // Replace with the name of your UI Page
-
-// Check access control
-if (uiAccessControl.checkAccess(userSysId, pageName)) {
-  // Implement the logic for your UI Page here.
-  // If access is granted, the user has the necessary roles or permissions.
-  // You can proceed with your UI Page logic here.
+// Check if the ACL already exists
+var acl = new GlideAccessControlList();
+if (acl.get('name', uiPageName)) {
+    gs.info('ACL for UI Page ' + uiPageName + ' already exists. No changes made.');
 } else {
-  // Access is denied. You can return an error message or redirect the user.
-  // For example:
-  // gs.addErrorMessage("Access denied for this UI Page.");
-  // action.setRedirectURL('your_redirect_url');
+    // Create a new ACL
+    acl.initialize();
+    acl.setValue('name', uiPageName);
+    acl.setValue('description', 'Access control for ' + uiPageName + ' UI Page');
+    
+    // Set the script that enforces access control
+    var script = "if (gs.hasRole('" + allowedRoles.join("') || gs.hasRole('") + "')) {gs.log('Access granted for UI Page: " + uiPageName + "');answer = true;} else {gs.log('Access denied for UI Page: " + uiPageName + "');answer = false;}";
+    acl.setValue('script', script);
+    
+    // Save the ACL
+    acl.insert();
+    
+    gs.info('ACL for UI Page ' + uiPageName + ' created successfully.');
 }
-Save your UI Page script.
-By implementing this solution, you ensure that UI Pages making calls to server-side code check for proper access control. You can customize the access control checks within the CustomUIAccessControl Script Include and perform additional checks as needed for your specific use case.
+Replace 'your_ui_page_name' with the name of your UI Page and 'user_admin', 'other_required_roles' with the roles that should have access to the UI Page. The script checks if an ACL with the specified name already exists, and if not, it creates a new ACL that enforces access control based on the provided roles.
+
+Make sure to execute this script in a server-side script context within ServiceNow to create or update the ACL for your UI Page. After running the script, the UI Page will be protected, and only users with the specified roles will have access to it.
