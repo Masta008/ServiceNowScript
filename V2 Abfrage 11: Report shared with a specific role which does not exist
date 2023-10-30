@@ -1,0 +1,23 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Reports shared with a role which does not exist might lead to unforeseen behaviour. Once a role with this name is created, immediately all the reports are shared with this role.
+
+//ServiceNow Field: "Resolution Details"
+Reports shared with a role which does not exist might lead to unforeseen behaviour, once a role with this name is created and immediately all the reports are shared with this role. Consider removing the role by editing the report and only share the report with valid roles.
+
+//ServiceNow Field "Script"
+(function(finding, current) {
+
+    var list = current.roles.split(',');
+    for (var i = 0; i < list.length; i++) {
+        var validator = new GlideRecord('sys_user_role');
+        if (!validator.get('name', list[i])) {
+            finding.increment();
+        }
+    }
+
+})(finding, current);
