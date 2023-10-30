@@ -1,0 +1,13 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+internal_integration_user field on user record can be checked, i.e. if any of the interation method is active and this field is not true for any record should be recorded as finding. However it may be tricky to check if  all the possible integrations are active?
+
+
+//ServiceNow Field: "Resolution Details"
+Run as user in automated scripts should have internal_integration_user field checked in user record'
+
+//ServiceNow Field "Script"
