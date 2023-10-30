@@ -10,6 +10,8 @@ Scripted Web Services insert/update/delete data directly
 //ServiceNow Field: "Resolution Details"
 Any update, insert or delete operations should be done in script include
 
+//Answer
+
 To achieve the functionality you described in a ServiceNow request using JavaScript, you can create a Scripted REST API and a Script Include. The Scripted REST API will handle insert, update, and delete operations on the "Description" field, and the Script Include will manage operations on the "Resolution Details" field. Here's a step-by-step guide on how to implement this:
 
 Create a Script Include:
