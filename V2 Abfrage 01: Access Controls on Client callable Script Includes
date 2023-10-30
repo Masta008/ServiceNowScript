@@ -25,39 +25,31 @@ Any logged-in users with minimum snc_internal can access an unprotected CCSI by 
 
 //Answer
 
-It seems like you want to create a JavaScript solution in the context of ServiceNow for securing client callable script includes using Access Control Lists (ACLs). The code you provided appears to be a business rule that checks whether a matching ACL exists for a specific script include. If no ACL is found, it increments a "finding" record.
-
-To create an ACL for client callable script includes, you can use the following code as an example. This code will check for the existence of an ACL, and if not found, it will create one.
+The JavaScript script you provided appears to be related to ServiceNow and is used to check access control lists (ACLs) for a specific field. Below is a breakdown of the script:
 
 javascript
 Copy code
-(function (current) {
-    var scriptIncludeName = current.name;
-    var aclType = 'client_callable_script_include';
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-    // Check if an ACL already exists for this script include
-    var aclGr = new GlideRecord('sys_security_acl');
-    aclGr.addQuery('type', aclType);
-    aclGr.addQuery('script', scriptIncludeName);
-    aclGr.query();
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with a minimum snc_internal role can access an unprotected CCSI by default. An attacker can run a GlideAjax on the console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script includes. Create an ACL around the script include with the Type as "client_callable_script_include" and define the required roles.
 
-    if (!aclGr.next()) {
-        // ACL doesn't exist, create a new one
-        var newAclGr = new GlideRecord('sys_security_acl');
-        newAclGr.initialize();
-        newAclGr.type = aclType;
-        newAclGr.script = scriptIncludeName;
-        newAclGr.name = 'ACL for ' + scriptIncludeName;
-        newAclGr.operation = 'execute'; // You can modify the operation as needed
-        newAclGr.condition = ''; // You can set a condition if necessary
-        newAclGr.insert();
+//ServiceNow Field "Script"
+(function (finding, current) {
+    // Create a new GlideRecord to query the sys_security_acl table.
+    var gr_acl = new GlideRecord('sys_security_acl');
+    gr_acl.addQuery('type', 'client_callable_script_include');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    gr_acl.query();
+    
+    // Check if there is a matching record in the sys_security_acl table.
+    if (!gr_acl.next()) {
+        // If no matching record is found, update the 'finding' record and increment it.
+        finding.setCurrentSource(current);
+        finding.increment();
     }
-})(current);
+})(finding, current);
+This script appears to be a part of a ServiceNow business rule or script that checks whether a specific record (referred to as 'current') meets certain security criteria related to access control lists (ACLs). It looks for a specific type of ACL called "client_callable_script_include" and checks if the 'name' field of the ACL record contains the name from the 'current' record. If no matching ACL record is found, it updates the 'finding' record and increments it.
 
-In this code:
-
-1. We retrieve the name of the script include from the current object.
-2. We specify the aclType as 'client_callable_script_include'.
-3. We query the sys_security_acl table to check if an ACL already exists for the script include.
-4. If no ACL is found, we create a new ACL and set the required properties such as type, script, name, operation, and condition.
-You can modify this code according to your specific requirements, such as changing the ACL operation or adding a condition to restrict access further.
+Please note that the script relies on ServiceNow's GlideRecord API, and it is essential to ensure that it is correctly integrated into your ServiceNow instance and associated with the appropriate table and business rule. Additionally, make sure to handle errors and exceptions as needed in a real-world scenario.
