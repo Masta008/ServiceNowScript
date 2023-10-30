@@ -10,4 +10,47 @@ This is considered as exposure of sensitive information caused by mis-configured
 //ServiceNow Field: "Resolution Details"
 Please make sure that Public field is set to false in portal pages unless its necessary, make sure the access is limited to required audience.
 
-//ServiceNow Field "Script"
+//Answer
+You can create a JavaScript script in ServiceNow that will address the ServiceNow request. This script can be run as a business rule or script include, depending on your specific requirements. Below is an example of how you can achieve this by updating the "Description" and "Resolution Details" fields when a record is updated.
+
+javascript
+Copy code
+(function executeRule(current, previous) {
+  // Define the ServiceNow fields
+  var descriptionField = current.description;
+  var resolutionDetailsField = current.resolution_details;
+  
+  // Check if the Description field contains sensitive information
+  var sensitiveInformationFound = checkForSensitiveInformation(descriptionField);
+  
+  // Check if the Public field is set to true in the portal page
+  var isPublicPortalPage = isPublicPortalPage(current);
+  
+  // Set the Resolution Details field based on the checks
+  if (sensitiveInformationFound) {
+    current.resolution_details = "Sensitive information exposure due to misconfigured service portal page. Pages should not be made public unless necessary for application requirements.";
+  } else if (isPublicPortalPage) {
+    current.resolution_details = "Please make sure the Public field is set to false in portal pages unless necessary. Ensure access is limited to the required audience.";
+  }
+})(current, previous);
+
+// Function to check for sensitive information in the Description field
+function checkForSensitiveInformation(description) {
+  // You can implement your own logic to check for sensitive information in the description field.
+  // This example simply checks for the word "sensitive" in the description.
+  return description.toLowerCase().includes("sensitive");
+}
+
+// Function to check if the Public field is set to true in the portal page
+function isPublicPortalPage(current) {
+  // You can implement your own logic to check the value of the Public field in the portal page.
+  // This example assumes a boolean field named "public" in the current record.
+  return current.public === true;
+}
+In this script:
+
+We define the ServiceNow fields "descriptionField" and "resolutionDetailsField".
+We check the "Description" field for the presence of sensitive information using the checkForSensitiveInformation function (you should customize this function according to your criteria).
+We check if the "Public" field is set to true for the portal page using the isPublicPortalPage function (you should customize this function to match your field name and criteria).
+Based on the checks, we update the "Resolution Details" field with the appropriate message.
+Please make sure to customize this script to match your ServiceNow configuration, field names, and any specific criteria for detecting sensitive information and portal page settings.
