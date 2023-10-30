@@ -10,39 +10,47 @@ Tables should be secured with access controls, data in the table should be limit
 //"Resolution Details"
 Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
 
-//ServiceNow Field "Script"
-(function (finding, current) {
-	
-    var g_acl = new GlideRecord('sys_security_acl');
-		g_acl.addQuery('name','CONTAINS',current.name);
-		g_acl.query();
-		if(!g_acl.next()){
-			finding.setCurrentSource(current);
-			finding.increment();
-		}
-
-})(finding, current);
-
-
-// Answer
-The provided JavaScript script is related to a ServiceNow request where you need to ensure that tables are secured with access controls and that all tables have ACLs (Access Control Lists). The script checks if an ACL with a name containing the current table name exists in the 'sys_security_acl' table. If it doesn't exist, it increments the 'finding' variable, which presumably keeps track of findings related to ACLs. Here's a breakdown of the script:
+//Answer
+To address the ServiceNow request you mentioned, you can create a JavaScript script that enforces Access Control Lists (ACLs) for tables in your ServiceNow instance. ACLs allow you to restrict access to data by defining rules that users must meet before they can interact with the data. Here's a script that can help you ensure that all tables have ACLs:
 
 javascript
 Copy code
-(function (finding, current) {
-    // Create a new GlideRecord object for 'sys_security_acl' table.
-    var g_acl = new GlideRecord('sys_security_acl');
+(function () {
+  // Specify the table names for which you want to create ACLs
+  var tablesToSecure = [
+    "table_name_1",
+    "table_name_2",
+    // Add more table names as needed
+  ];
 
-    // Add a query to check if an ACL with a name containing the current table name exists.
-    g_acl.addQuery('name', 'CONTAINS', current.name);
+  // Define the ACL properties
+  var aclProperties = {
+    operation: "read", // You can customize this based on your requirements
+    role: "admin", // The role that has access
+    condition: "true", // You can customize the condition as needed
+    script: "", // You can add scripts for additional control
+  };
 
-    // Execute the query.
-    g_acl.query();
+  // Loop through the specified tables and create ACLs
+  tablesToSecure.forEach(function (tableName) {
+    var acl = new GlideACL();
+    acl.name = "Secure " + tableName + " Table"; // ACL name
+    acl.description = "ACL to secure access to the " + tableName + " table."; // ACL description
+    acl.active = true;
+    acl.applies_to = tableName;
+    acl.operation = aclProperties.operation;
+    acl.condition = aclProperties.condition;
+    acl.role = aclProperties.role;
+    acl.script = aclProperties.script;
 
-    // If no matching ACL is found, increment the 'finding' count.
-    if (!g_acl.next()) {
-        finding.setCurrentSource(current);
-        finding.increment();
-    }
-})(finding, current);
-This script essentially checks if an ACL for the current table exists. If it doesn't, it increments a 'finding' count, indicating that an ACL is missing. Make sure that the 'finding' variable is defined and used appropriately in your ServiceNow context. This script is a starting point to ensure ACLs are in place but doesn't implement the ACLs themselves. You will need to define the ACLs separately in your ServiceNow instance based on your security requirements.
+    // Save the ACL
+    var aclID = acl.insert();
+    gs.log("Created ACL for " + tableName + " with ID: " + aclID);
+  });
+
+  // Log completion
+  gs.log("ACL creation script completed.");
+})();
+Make sure to replace "table_name_1", "table_name_2", and any other table names in the tablesToSecure array with the names of the tables you want to secure with ACLs. You can also customize the ACL properties (operation, role, condition, and script) as per your specific requirements.
+
+After creating the script, you can execute it within the ServiceNow environment. It will loop through the specified tables and create ACLs for each of them, ensuring that data access is restricted according to your defined rules
