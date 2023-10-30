@@ -10,4 +10,35 @@ If appropriate roles are not assigned to record producers then, an unauthorized 
 //ServiceNow Field: "Resolution Details"
 Record producers should be assigned appropriate role, record producer script should secure GlideRecord and/or GlideSystem API calls.
 
-//ServiceNow Field "Script"
+To address the ServiceNow request, you can create a server-side script in ServiceNow that checks if the appropriate roles are assigned to record producers and secures GlideRecord and GlideSystem API calls. Here's a JavaScript script that you can use as a starting point:
+
+javascript
+Copy code
+(function executeRule(current, previous /* other possible inputs */) {
+    // Check if the current record is a Record Producer
+    if (current.getValue('producer') === true) {
+        // Check if the user has the appropriate roles
+        var requiredRoles = ['role1', 'role2', 'role3']; // Replace with the actual roles
+        var userRoles = gs.getUser().getRoles();
+        var hasRequiredRoles = false;
+
+        for (var i = 0; i < requiredRoles.length; i++) {
+            if (userRoles.indexOf(requiredRoles[i]) !== -1) {
+                hasRequiredRoles = true;
+                break;
+            }
+        }
+
+        if (!hasRequiredRoles) {
+            // If the user doesn't have the required roles, deny access
+            gs.addErrorMessage('Unauthorized access. You do not have the required roles to access this record producer.');
+            current.setAbortAction(true);
+            return;
+        }
+    }
+
+    // If the user has the appropriate roles, continue with the record producer script
+    // Secure GlideRecord and GlideSystem API calls as needed in the script.
+
+})(current, previous);
+Make sure to replace 'role1', 'role2', and 'role3' with the actual roles that should have access to the record producer. This script should be placed in a business rule or other appropriate script execution location within ServiceNow to enforce the access control and secure API calls for record producers.
