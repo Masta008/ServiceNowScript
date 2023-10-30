@@ -10,31 +10,44 @@ Checks to see if the UI Action can be accessed by a user with no roles who does 
 //ServiceNow Field: "Resolution Details"
 Use conditions or visibility criteria to restrict access to UI Actions.
 
-//ServiceNow Field "Script"
-(function(finding, current) {
+//Answer
+In ServiceNow, you can use Business Rules and UI Policies to control access to UI Actions based on conditions or visibility criteria. To achieve the requested functionality for the "Description" and "Resolution Details" fields, you can use a combination of client-side scripting and UI Policies.
 
-    var found = true;
-    var gr = new GlideRecord("sys_ui_action_view");
-    gr.addQuery('sys_ui_action', current.sys_id);
-    gr.query();
-    if (gr.next()) {
-        found = false;
-    }
-    if (JSUtil.notNil(current.condition)) {
-        if (current.condition.includes("gs.hasRole")) {
-            found = false;
-        }
-    }
+Here's a JavaScript script solution that demonstrates how to restrict access to UI Actions based on user roles and table read access:
 
-    var gr2 = new GlideRecord('sys_ui_action_role');
-    gr2.addQuery('sys_ui_action', current.sys_id);
-    gr2.query();
-    if (gr2.next()) {
-        found = false;
-    }
-    if (found) {
-        finding.setCurrentSource(current);
-        finding.increment();
-    }
+Go to "UI Actions" in your ServiceNow instance.
 
-})(finding, current);
+Create a new UI Action or edit an existing one.
+
+In the UI Action form, you can set the conditions and visibility criteria using the script fields. Below is a sample JavaScript script for a UI Action in the "Description" field:
+
+javascript
+Copy code
+(function() {
+  // Check if the user has no roles and doesn't have read access to the table
+  if (!g_user.hasRoles() && !g_user.hasReadAccess('your_table_name')) {
+    // If the condition is met, hide the UI Action
+    g_ui_hide_actions = true;
+  }
+})();
+Replace 'your_table_name' with the actual name of the table you want to check access for.
+
+Similarly, you can create a UI Action for the "Resolution Details" field with a similar script. Here's an example:
+javascript
+Copy code
+(function() {
+  // Check if the user has no roles and doesn't have read access to the table
+  if (!g_user.hasRoles() && !g_user.hasReadAccess('your_table_name')) {
+    // If the condition is met, hide the UI Action
+    g_ui_hide_actions = true;
+  }
+})();
+Remember to replace 'your_table_name' with the actual name of the table.
+
+After defining the scripts, save the UI Action.
+
+Create a UI Policy to conditionally show or hide the UI Action based on the "Description" or "Resolution Details" field. You can use the "Condition" field of the UI Policy to specify the conditions when the UI Action should be displayed.
+
+This approach will hide the UI Action for users with no roles and no read access to the table. Ensure that you have the appropriate roles and permissions to create and manage UI Actions and UI Policies in your ServiceNow instance.
+
+Make sure to thoroughly test the behavior of these UI Actions in your ServiceNow instance to ensure they meet your access control requirements.
