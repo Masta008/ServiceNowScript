@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+If appropriate roles are not assigned to record producers then, an unauthorized users can access it by directly navigating to the URL and thereby revealing unnecessary and sensitive information.
+
+//ServiceNow Field: "Resolution Details"
+Record producers should be assigned appropriate role, record producer script should secure GlideRecord and/or GlideSystem API calls.
+
+//ServiceNow Field "Script"
