@@ -1,0 +1,34 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Having many Cross Privileges in a custom application, might be an indication that during development these Cross Scope privileges were added unintentionally.
+
+//ServiceNow Field: "Resolution Details"
+Recommendation is to investigate each Cross Scope privilege and identify whether this is really needed as part of the application. If not remove the privilege.
+Removing privileges might require regression testing to ensure that nothing will break. The extend of testing will depend on the Application size.
+
+//ServiceNow Field "Script"
+(function(finding, current) {
+
+    var threshold = 25; // number of cross scope 
+    // get number of cross scope privileges
+    var snGr = new GlideAggregate('sys_scope_privilege');
+    snGr.addQuery('sys_scope', current.sys_id.toString());
+    snGr.addAggregate('COUNT');
+    snGr.query(); // get all
+    if (snGr.next()) {
+        // compare against threshold
+        var count = snGr.getAggregate('COUNT');
+        if (count > threshold) {
+            // add finding
+
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
+    }
+
+
+})(finding, current);
