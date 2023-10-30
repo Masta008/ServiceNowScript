@@ -1,0 +1,24 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+
+//ServiceNow Field: "Resolution Details"
+UI Pages making call to server side code should have ACL's implemented.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+	
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','ui_page');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+
+})(finding, current);
