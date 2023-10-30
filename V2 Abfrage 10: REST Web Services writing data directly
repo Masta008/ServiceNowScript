@@ -12,4 +12,86 @@ Any update, insert or delete operations should be done in script include
 
 https://docs.servicenow.com/csh?topicname=c_ScriptedWebServices.html
 
-//ServiceNow Field "Script"
+//Answer
+To accomplish the task you described, you need to create a JavaScript script that allows you to insert, update, or delete data directly in ServiceNow using Scripted Web Services. Additionally, for any operations involving the "Resolution Details" field, these should be handled in a Script Include. Below is a basic outline of how you can achieve this:
+
+Create a Script Include:
+Create a Script Include in your ServiceNow instance to handle operations related to the "Resolution Details" field. This Script Include should have methods to insert, update, and delete data. Here's an example of how the Script Include might look:
+javascript
+Copy code
+// Script Include: MyScriptInclude
+
+var MyScriptInclude = Class.create();
+MyScriptInclude.prototype = {
+
+  // Method to insert data into the "Resolution Details" field
+  insertResolutionDetails: function(description, details) {
+    // Your logic to insert data here
+  },
+
+  // Method to update data in the "Resolution Details" field
+  updateResolutionDetails: function(description, newDetails) {
+    // Your logic to update data here
+  },
+
+  // Method to delete data from the "Resolution Details" field
+  deleteResolutionDetails: function(description) {
+    // Your logic to delete data here
+  },
+
+  type: 'MyScriptInclude'
+};
+Create a Scripted Web Service:
+Define a Scripted Web Service that exposes endpoints to insert, update, and delete data directly. You can use the 'Scripted REST APIs' feature in ServiceNow for this purpose. Configure your Scripted Web Service to use the Script Include you created in the previous step to handle operations on the "Resolution Details" field.
+
+JavaScript Script:
+Now, create a JavaScript script that interacts with your Scripted Web Service to perform the required operations. Below is an example of how you can structure the JavaScript script:
+
+javascript
+Copy code
+// Define your REST endpoint URL
+var endpointURL = 'https://your-instance.service-now.com/api/your-scripted-web-service-endpoint';
+
+// Example data for insertion
+var dataToInsert = {
+  description: 'Your Description',
+  resolutionDetails: 'Your Resolution Details'
+};
+
+// Example data for update
+var dataToUpdate = {
+  description: 'Your Description',
+  newResolutionDetails: 'Updated Resolution Details'
+};
+
+// Example data for deletion
+var dataToDelete = {
+  description: 'Your Description'
+};
+
+// Function to make a REST API request to your Scripted Web Service
+function makeRequest(data, method) {
+  var request = new sn_ws.RESTMessageV2();
+  request.setEndpoint(endpointURL);
+  request.setHttpMethod(method);
+
+  if (data) {
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.setRequestBody(JSON.stringify(data));
+  }
+
+  var response = request.execute();
+  var responseBody = response.getBody();
+  return responseBody;
+}
+
+// Usage examples
+var insertResponse = makeRequest(dataToInsert, 'POST');
+var updateResponse = makeRequest(dataToUpdate, 'PUT');
+var deleteResponse = makeRequest(dataToDelete, 'DELETE');
+
+// Process the responses as needed
+// ...
+Make sure to replace 'https://your-instance.service-now.com/api/your-scripted-web-service-endpoint' with the actual URL of your Scripted Web Service endpoint.
+
+This is a basic outline of how you can achieve your task in ServiceNow. You will need to customize the Script Include and the REST endpoint according to your specific requirements.
