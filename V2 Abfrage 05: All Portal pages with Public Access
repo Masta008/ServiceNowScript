@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+This is considered as exposure of sensitive information caused by mis-configured  service portal pages, pages should not be made public unless its necessary to support application requirements.
+
+//ServiceNow Field: "Resolution Details"
+Please make sure that Public field is set to false in portal pages unless its necessary, make sure the access is limited to required audience.
+
+//ServiceNow Field "Script"
