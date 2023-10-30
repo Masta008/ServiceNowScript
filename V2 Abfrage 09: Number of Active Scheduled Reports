@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Number of Active Scheduled Reports.  Scheduled reports export data which is no longer protected by ACLs and is no longer trackable.
+
+//ServiceNow Field: "Resolution Details"
+Be aware of data leaving the instance.
+
+//ServiceNow Field "Script"
