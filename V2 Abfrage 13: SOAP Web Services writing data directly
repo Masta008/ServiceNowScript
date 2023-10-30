@@ -10,4 +10,66 @@ Scripted Web Services insert/update/delete data directly
 //ServiceNow Field: "Resolution Details"
 Any update, insert or delete operations should be done in script include
 
-//ServiceNow Field "Script"
+To achieve the functionality you described in a ServiceNow request using JavaScript, you can create a Scripted REST API and a Script Include. The Scripted REST API will handle insert, update, and delete operations on the "Description" field, and the Script Include will manage operations on the "Resolution Details" field. Here's a step-by-step guide on how to implement this:
+
+Create a Script Include:
+
+Navigate to "System Definition" > "Script Includes."
+Click on "New" to create a new Script Include.
+Name it, e.g., "ResolutionDetailsHandler."
+Here's a sample Script Include for managing "Resolution Details" (make sure to customize it as per your business logic):
+
+javascript
+Copy code
+var ResolutionDetailsHandler = Class.create();
+ResolutionDetailsHandler.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+  // Constructor
+  initialize: function() {
+    AbstractAjaxProcessor.prototype.initialize.call(this);
+  },
+
+  // Method for updating Resolution Details
+  updateResolutionDetails: function(description, newResolution) {
+    // Your business logic here to update "Resolution Details" based on the "Description"
+    // For example, find the record, update the "Resolution Details" field, and save the record.
+    // You can use GlideRecord for database operations.
+  }
+});
+Create a Scripted REST API:
+
+Navigate to "System Web Services" > "Scripted REST APIs."
+Click "New" to create a new Scripted REST API.
+Configure the API as follows:
+Name: Choose a name for your REST API, e.g., "DescriptionHandlerAPI."
+Namespace: Define a namespace.
+Version: Choose a version, e.g., "v1."
+HTTP Method: POST (for insert and update operations) and DELETE (for delete operation).
+Authentication: Choose your desired authentication method (e.g., Basic).
+Script Include: Select the "ResolutionDetailsHandler" Script Include created in step 1.
+Define an Endpoint with a Resource Path (e.g., /description-handler).
+Here's a sample Scripted REST API script (customize as needed):
+
+javascript
+Copy code
+(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+  var description = request.body.data.description;
+  var newResolution = request.body.data.newResolution;
+  var method = request.httpMethod;
+
+  if (method == 'POST') {
+    // Handle insert or update operation
+    // Call the Script Include to update Resolution Details
+    var handler = new ResolutionDetailsHandler();
+    handler.updateResolutionDetails(description, newResolution);
+    response.setStatus(204); // Success, no content
+  } else if (method == 'DELETE') {
+    // Handle delete operation
+    // Implement your logic to delete the record or set Resolution Details to null
+    response.setStatus(204); // Success, no content
+  }
+})(request, response);
+Once your Scripted REST API and Script Include are created, you can make HTTP requests to your REST API endpoint (e.g., /api/now/table/description-handler) to perform insert, update, and delete operations on the "Description" field. The API will use the Script Include to update the "Resolution Details" field based on your business logic.
+
+Ensure that you have the necessary roles and permissions for your API users to execute these operations.
+
+Please note that this is a basic example, and you should customize the code in the Script Include and REST API script according to your specific ServiceNow instance's requirements and security considerations.
