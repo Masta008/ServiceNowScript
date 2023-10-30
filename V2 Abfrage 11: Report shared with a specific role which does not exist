@@ -3,7 +3,8 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//please program a javascript script solution for the following servicenow request:
+//ServiceNow Field: "Description"
 Reports shared with a role which does not exist might lead to unforeseen behaviour. Once a role with this name is created, immediately all the reports are shared with this role.
 
 //ServiceNow Field: "Resolution Details"
