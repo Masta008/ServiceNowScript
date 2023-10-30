@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+All service portal widgets must have specific role defined at widget level to restrict access to required audience.
+
+//ServiceNow Field: "Resolution Details"
+Make sure to define roles on service portal widget to limit access to required audience.
+
+//ServiceNow Field "Script"
