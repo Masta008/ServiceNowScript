@@ -4,7 +4,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//Request to ChatGPT: Create a javascript solution:
+//please program a javascript script solution for the following servicenow request:
 //ServiceNow Field: "Description"
 Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
