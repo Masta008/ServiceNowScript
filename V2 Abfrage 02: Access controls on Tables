@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//Request: Write a javascript solution: 
+//please program a javascript script solution for the following servicenow request:
 //ServiceNow Field: "Description"
 Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
