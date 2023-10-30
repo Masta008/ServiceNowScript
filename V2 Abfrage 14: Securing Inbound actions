@@ -3,7 +3,8 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//please program a javascript script solution for the following servicenow request:
+//ServiceNow Field: "Description"
 Verify all the senders must have required role to trigger inbound action.
 
 //ServiceNow Field: "Resolution Details"
