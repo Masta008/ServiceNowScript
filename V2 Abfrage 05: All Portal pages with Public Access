@@ -3,6 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
+//please program a javascript script solution for the following servicenow request:
 /ServiceNow Field: "Description"
 This is considered as exposure of sensitive information caused by mis-configured  service portal pages, pages should not be made public unless its necessary to support application requirements.
 
