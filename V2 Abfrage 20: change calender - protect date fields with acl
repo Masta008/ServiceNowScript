@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Planned Start and End date of change records are very sensitive and should be protected.  UI Policies applied to the date fields on the form are not effecitve because users can still update it for example in list view.
+
+//ServiceNow Field: "Resolution Details"
+It is recommended to use ACLs to secure those date fields rather than UI Policies.  If ACLs are already existing then there is no need to use the UI Policy.
+
+//ServiceNow Field "Script"
