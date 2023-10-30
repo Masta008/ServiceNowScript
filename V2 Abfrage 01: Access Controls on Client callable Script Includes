@@ -23,33 +23,36 @@ Any logged-in users with minimum snc_internal can access an unprotected CCSI by 
 		}
 })(finding, current);
 
-//Answer
-
-The JavaScript script you provided appears to be related to ServiceNow and is used to check access control lists (ACLs) for a specific field. Below is a breakdown of the script:
+It seems like you want to create an Access Control List (ACL) in ServiceNow to secure a client callable script include and restrict access to it based on the required roles. You provided a script that checks if an ACL exists for the given client callable script include and increments a finding if it doesn't. Below is a JavaScript solution that you can use to create this ACL in ServiceNow:
 
 javascript
 Copy code
-//ServiceNow Field: "Description"
-Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+(function () {
+    var scriptIncludeName = 'YourScriptIncludeName'; // Replace with your script include name
+    var aclName = 'ACL_Name_For_Script_Include'; // Replace with a meaningful ACL name
+    var requiredRoles = 'snc_internal'; // Replace with the required roles
 
-//ServiceNow Field: "Resolution Details"
-Any logged-in users with a minimum snc_internal role can access an unprotected CCSI by default. An attacker can run a GlideAjax on the console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script includes. Create an ACL around the script include with the Type as "client_callable_script_include" and define the required roles.
-
-//ServiceNow Field "Script"
-(function (finding, current) {
-    // Create a new GlideRecord to query the sys_security_acl table.
-    var gr_acl = new GlideRecord('sys_security_acl');
-    gr_acl.addQuery('type', 'client_callable_script_include');
-    gr_acl.addQuery('name', 'CONTAINS', current.name);
-    gr_acl.query();
-    
-    // Check if there is a matching record in the sys_security_acl table.
-    if (!gr_acl.next()) {
-        // If no matching record is found, update the 'finding' record and increment it.
-        finding.setCurrentSource(current);
-        finding.increment();
+    // Create or update the ACL for the script include
+    var acl = new GlideAccessControlList();
+    if (acl.get('name', aclName) && acl.get('operation', 'client_script')) {
+        // ACL already exists, update it
+        acl.setValue('description', 'ACL for ' + scriptIncludeName);
+        acl.setValue('roles', requiredRoles);
+        acl.update();
+    } else {
+        // ACL doesn't exist, create it
+        acl.initialize();
+        acl.setValue('name', aclName);
+        acl.setValue('description', 'ACL for ' + scriptIncludeName);
+        acl.setValue('script', scriptIncludeName);
+        acl.setValue('operation', 'client_script');
+        acl.setValue('roles', requiredRoles);
+        acl.insert();
     }
-})(finding, current);
-This script appears to be a part of a ServiceNow business rule or script that checks whether a specific record (referred to as 'current') meets certain security criteria related to access control lists (ACLs). It looks for a specific type of ACL called "client_callable_script_include" and checks if the 'name' field of the ACL record contains the name from the 'current' record. If no matching ACL record is found, it updates the 'finding' record and increments it.
+})();
+Here's how to use this script:
 
-Please note that the script relies on ServiceNow's GlideRecord API, and it is essential to ensure that it is correctly integrated into your ServiceNow instance and associated with the appropriate table and business rule. Additionally, make sure to handle errors and exceptions as needed in a real-world scenario.
+Replace 'YourScriptIncludeName' with the name of your client callable script include.
+Replace 'ACL_Name_For_Script_Include' with a meaningful name for the ACL.
+Replace 'snc_internal' with the required roles for access.
+This script checks if the specified ACL for the given client callable script include already exists. If it exists, it updates the existing ACL; if not, it creates a new ACL. This ACL will restrict access to the script include based on the specified required roles.
