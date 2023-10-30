@@ -10,4 +10,55 @@ Planned Start and End date of change records are very sensitive and should be pr
 //ServiceNow Field: "Resolution Details"
 It is recommended to use ACLs to secure those date fields rather than UI Policies.  If ACLs are already existing then there is no need to use the UI Policy.
 
-//ServiceNow Field "Script"
+//Answer
+To address the ServiceNow request, you can use a JavaScript script to enforce security for the "Planned Start" and "Planned End" date fields and recommend the use of ACLs for the "Resolution Details" field. You can use a client-side script to prevent users from modifying these fields in the list view. Here's a sample JavaScript solution:
+
+javascript
+Copy code
+(function () {
+    // Define the field names and their respective ACL names
+    const sensitiveFields = {
+        'Planned Start': 'change_planned_start_acl',
+        'Planned End': 'change_planned_end_acl',
+    };
+
+    // Check if the current user has the necessary ACLs to edit sensitive fields
+    function hasEditAccess(field) {
+        const aclName = sensitiveFields[field];
+        return gs.hasAccess(aclName);
+    }
+
+    // Function to disable date fields in the list view
+    function disableDateFields() {
+        const dateFields = Object.keys(sensitiveFields);
+
+        dateFields.forEach((field) => {
+            const fieldName = 'change_request.' + field;
+            const fieldElement = g_list.getControl(fieldName);
+
+            if (fieldElement) {
+                // Check if the user has edit access, if not, disable the field
+                if (!hasEditAccess(field)) {
+                    fieldElement.readOnly = true;
+                    fieldElement.style.pointerEvents = 'none';
+                }
+            }
+        });
+    }
+
+    // Attach the function to the List v3 page
+    if (typeof g_list !== 'undefined') {
+        disableDateFields();
+    }
+})();
+Here's how this script works:
+
+It defines an object sensitiveFields that maps the field names to their respective ACL names. In this case, it's 'Planned Start' and 'Planned End' fields.
+
+The hasEditAccess function checks if the current user has the necessary ACL to edit the specified field.
+
+The disableDateFields function is responsible for finding the date fields in the list view and disabling them for users who don't have the appropriate ACL.
+
+The script is attached to the List v3 page and is executed when the page loads.
+
+Make sure to create the appropriate ACLs for the 'Planned Start' and 'Planned End' fields in ServiceNow and replace the ACL names in the sensitiveFields object with the actual names used in your instance. This script will make these fields read-only in the list view for users who don't have the required ACLs.
