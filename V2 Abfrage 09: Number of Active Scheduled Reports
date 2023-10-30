@@ -10,4 +10,35 @@ Number of Active Scheduled Reports.  Scheduled reports export data which is no l
 //ServiceNow Field: "Resolution Details"
 Be aware of data leaving the instance.
 
-//ServiceNow Field "Script"
+//Answer
+To create a JavaScript script for a ServiceNow request that counts the number of active scheduled reports and provides a warning in the "Resolution Details" field, you can use ServiceNow's GlideAggregate API. Here's a sample script that you can use as a starting point. This script should be run in a business rule, script include, or a similar context within ServiceNow:
+
+javascript
+Copy code
+// Check for active scheduled reports
+var scheduledReportCount = 0;
+
+var gr = new GlideAggregate('sysauto_report');
+gr.addEncodedQuery('active=true^ORactive_recurring=true');
+gr.addAggregate('COUNT');
+gr.query();
+if (gr.next()) {
+    scheduledReportCount = gr.getAggregate('COUNT');
+}
+
+// Set the warning message
+var warningMessage = 'Be aware of data leaving the instance. Number of Active Scheduled Reports: ' + scheduledReportCount;
+
+// Update the "Resolution Details" field in the current record
+current.resolution_details = warningMessage;
+current.update();
+
+// You can also log the message for reference
+gs.info(warningMessage);
+This script does the following:
+
+It queries the 'sysauto_report' table to count the number of active scheduled reports.
+It constructs a warning message that includes the count of active scheduled reports and the warning message about data leaving the instance.
+It updates the "Resolution Details" field in the current record with the warning message.
+It logs the warning message for reference.
+Make sure to adapt the script to your specific requirements and ServiceNow configuration. You can trigger this script using business rules, UI policies, or other methods based on your needs.
