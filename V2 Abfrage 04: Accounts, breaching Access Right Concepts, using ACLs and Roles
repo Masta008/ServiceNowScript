@@ -11,4 +11,24 @@ Is there any account with Roles assigned and related ACLs configured to enable p
 //ServiceNow Field: "Resolution Details"
 All accounts having privileged access, including admin or security_admin, should be examined thoroughly to make sure that such an access level is required. If the access has been granted for a special purpose or for a specific task, the access should be revoked after the task is done or the time period is over. All the accounts having a role with Elevated privilege set to true, including security_admin and admin, should be verified and discussed. This definition will identify those accounts as findings. 
 
-//ServiceNow Field "Script"
+//Answer
+To create a JavaScript script to address the ServiceNow request you provided, you can use a server-side script in ServiceNow. Below is a sample script that you can adapt and use as an "OnSubmit" business rule, which runs when a record is submitted. This script checks the "Description" field for specific keywords and populates the "Resolution Details" field based on the content of the "Description" field.
+
+javascript
+Copy code
+(function executeRule(current, previous /*, display_error*/ ) {
+  var description = current.description.getDisplayValue();
+  var resolutionDetails = "";
+
+  // Check if the Description contains keywords related to insider threats
+  if (description.match(/insider threat|prohibited data manipulation|privileged access|elevated privilege/i)) {
+    resolutionDetails = "All accounts having privileged access, including admin or security_admin, should be examined thoroughly to make sure that such an access level is required. If the access has been granted for a special purpose or for a specific task, the access should be revoked after the task is done or the time period is over. All the accounts having a role with Elevated privilege set to true, including security_admin and admin, should be verified and discussed. This definition will identify those accounts as findings.";
+  }
+
+  // Set the Resolution Details field
+  current.resolution_details = resolutionDetails;
+
+})(current, previous);
+Make sure to replace current.description and current.resolution_details with the actual field names in your ServiceNow instance if they are different. You can also adjust the regular expressions or keywords in the if condition to match the specific criteria you need.
+
+This script will check the "Description" field for keywords related to insider threats and set the "Resolution Details" field accordingly. You can further customize the script to fit your specific requirements or trigger it in different ways, depending on your workflow.
