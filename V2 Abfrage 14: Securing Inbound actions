@@ -1,0 +1,12 @@
+//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+
+++Communitation with ChatGPT++
+
+//User 
+/ServiceNow Field: "Description"
+Verify all the senders must have required role to trigger inbound action.
+
+//ServiceNow Field: "Resolution Details"
+All inbound actions should have roles mentioned in "Required roles" field to secure actions triggered from inbound actions, only users with the required roles should be allowed to trigger inbound action
+
+//ServiceNow Field "Script"
