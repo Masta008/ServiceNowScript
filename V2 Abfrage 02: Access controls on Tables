@@ -3,7 +3,8 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//Request: Write a javascript solution: 
+//ServiceNow Field: "Description"
 Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
 //ServiceNow Field: "Resolution Details"
@@ -21,3 +22,40 @@ Make sure that all tables should have ACL's. Rules for access control lists (ACL
 		}
 
 })(finding, current);
+
+
+// Answer
+
+The JavaScript code you've provided appears to be a business rule that enforces security in a ServiceNow instance. This code checks whether an Access Control List (ACL) exists for a given table and field. If the ACL doesn't exist, it increments a finding count.
+
+Here's a breakdown of the code:
+
+javascript
+Copy code
+(function (finding, current) {
+    // Create a new GlideRecord object for the 'sys_security_acl' table.
+    var g_acl = new GlideRecord('sys_security_acl');
+
+    // Add a query to search for ACLs where the 'name' field contains the name of the current record.
+    g_acl.addQuery('name', 'CONTAINS', current.name);
+    g_acl.query();
+
+    // If no matching ACL is found, increment the finding count.
+    if (!g_acl.next()) {
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+})(finding, current);
+Here's a step-by-step explanation:
+
+The code is wrapped in an anonymous function, and it accepts two parameters: finding and current. These parameters are typically used to interact with the Business Rule engine and the current record, respectively.
+
+Inside the function, a new GlideRecord object is created for the 'sys_security_acl' table. GlideRecord is a ServiceNow API for querying records in tables.
+
+A query is added to the GlideRecord to search for ACLs where the 'name' field contains the name of the current record. The 'CONTAINS' operator is used to find partial matches in the 'name' field.
+
+The query method is called on the GlideRecord object to execute the query.
+
+If the query doesn't return any records (no matching ACLs are found), the code increments the finding count and sets the current source to the current record. This is a common way to keep track of findings or violations when enforcing security rules.
+
+This code is designed to ensure that all tables have ACLs in place and that ACLs exist for fields within those tables. If an ACL is missing, it logs a finding. However, you may need to configure the business rule to run at the appropriate event and condition within your ServiceNow instance to achieve the desired security enforcement.
