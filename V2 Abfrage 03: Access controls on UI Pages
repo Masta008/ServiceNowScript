@@ -25,36 +25,60 @@ UI Pages making call to server side code should have ACL's implemented.
 })(finding, current);
 
 //Answer
-To address the ServiceNow request for creating an Access Control List (ACL) for a Client Callable Script Include (CCSI), you can use JavaScript to create the ACL. Below is a JavaScript script that you can use in your ServiceNow instance to define the required roles for accessing a Client Callable Script Include. Please note that this script should be run in a ServiceNow environment with administrative privileges:
+To address the ServiceNow request, you can create a server-side script that enforces ACL-like access control for UI Pages. In ServiceNow, you can implement such logic using Script Includes. Here's a JavaScript script solution that enforces access control for UI Pages in ServiceNow:
+
+Create a new Script Include in ServiceNow by navigating to "System Definition" -> "Script Includes."
+
+Create a new Script Include, for example, named "CustomUIAccessControl."
+
+In the "CustomUIAccessControl" Script Include, you can add the following code:
 
 javascript
 Copy code
-// Define the name of the Client Callable Script Include
-var scriptIncludeName = 'YourClientCallableScriptIncludeName';
+var CustomUIAccessControl = Class.create();
+CustomUIAccessControl.prototype = {
+  initialize: function() {},
 
-// Define the required roles for accessing the Client Callable Script Include
-var requiredRoles = ['snc_internal']; // You can add more roles as needed
+  // Function to check access control for a UI Page
+  checkAccess: function(userSysId, pageName) {
+    // Check if the user has a specific role (e.g., 'user_admin') or other authorization checks.
+    if (!gs.hasRole('user_admin')) {
+      // Deny access to the UI Page
+      gs.log("Access denied for user: " + userSysId + " to UI Page: " + pageName);
+      return false;
+    }
+    
+    // Implement additional ACL-like checks or conditions as needed.
 
-// Create an ACL record for the Client Callable Script Include
-var acl = new GlideRecord('sys_security_acl');
-acl.initialize();
-acl.setValue('name', 'ACL for ' + scriptIncludeName);
-acl.setValue('operation', 'execute');
-acl.setValue('script_include', scriptIncludeName);
-acl.setValue('script', 'current');
-acl.insert();
+    // Allow access if no restrictions are met
+    return true;
+  },
 
-// Attach the required roles to the ACL record
-for (var i = 0; i < requiredRoles.length; i++) {
-    var role = requiredRoles[i];
-    var aclRole = new GlideRecord('sys_security_acl_role');
-    aclRole.initialize();
-    aclRole.setValue('acl', acl.sys_id);
-    aclRole.setValue('role', role);
-    aclRole.insert();
+  type: 'CustomUIAccessControl'
+};
+Save the Script Include.
+
+Now, for each UI Page in ServiceNow, you should define a script that checks access using the CustomUIAccessControl Script Include. Here's an example of how you can implement this within your UI Page server script:
+
+javascript
+Copy code
+// Include the CustomUIAccessControl script include
+var uiAccessControl = new CustomUIAccessControl();
+
+// Get the user's sys_id (you may need to adjust how you get this)
+var userSysId = gs.getUser().getID();
+var pageName = 'your_ui_page_name'; // Replace with the name of your UI Page
+
+// Check access control
+if (uiAccessControl.checkAccess(userSysId, pageName)) {
+  // Implement the logic for your UI Page here.
+  // If access is granted, the user has the necessary roles or permissions.
+  // You can proceed with your UI Page logic here.
+} else {
+  // Access is denied. You can return an error message or redirect the user.
+  // For example:
+  // gs.addErrorMessage("Access denied for this UI Page.");
+  // action.setRedirectURL('your_redirect_url');
 }
-
-gs.print('ACL created and roles attached for ' + scriptIncludeName);
-Please make sure to replace 'YourClientCallableScriptIncludeName' with the actual name of your Client Callable Script Include, and adjust the requiredRoles array to include the roles that should have access to it.
-
-After running this script, an ACL will be created for your Client Callable Script Include, and the specified roles will be granted access to it. This helps secure your Client Callable Script Include by restricting access to authorized users only.
+Save your UI Page script.
+By implementing this solution, you ensure that UI Pages making calls to server-side code check for proper access control. You can customize the access control checks within the CustomUIAccessControl Script Include and perform additional checks as needed for your specific use case.
