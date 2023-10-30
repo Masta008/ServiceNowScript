@@ -11,25 +11,45 @@ Having many Cross Privileges in a custom application, might be an indication tha
 Recommendation is to investigate each Cross Scope privilege and identify whether this is really needed as part of the application. If not remove the privilege.
 Removing privileges might require regression testing to ensure that nothing will break. The extend of testing will depend on the Application size.
 
-//ServiceNow Field "Script"
-(function(finding, current) {
+//Answer
+To create a JavaScript script for your ServiceNow request, you can use ServiceNow's scripting capabilities, specifically, Business Rules. Here's an example script that you can use as a starting point to automate the investigation and potential removal of Cross Scope privileges in a custom application's development environment. This script will need to be adapted and thoroughly tested in your specific ServiceNow instance.
 
-    var threshold = 25; // number of cross scope 
-    // get number of cross scope privileges
-    var snGr = new GlideAggregate('sys_scope_privilege');
-    snGr.addQuery('sys_scope', current.sys_id.toString());
-    snGr.addAggregate('COUNT');
-    snGr.query(); // get all
-    if (snGr.next()) {
-        // compare against threshold
-        var count = snGr.getAggregate('COUNT');
-        if (count > threshold) {
-            // add finding
+javascript
+Copy code
+// Define the table where Cross Scope privileges are stored (assuming it's a custom table)
+var crossScopePrivilegesTable = 'x_custom_cross_privileges';
 
-            finding.setCurrentSource(current);
-            finding.increment();
-        }
-    }
+// Query for all Cross Scope privileges in your custom application
+var crossScopePrivileges = new GlideRecord(crossScopePrivilegesTable);
+crossScopePrivileges.addQuery('custom_application', 'YOUR_CUSTOM_APP_NAME');
+crossScopePrivileges.query();
 
+// Iterate through the privileges and investigate each one
+while (crossScopePrivileges.next()) {
+    // Get the details of the privilege
+    var privilegeName = crossScopePrivileges.getValue('name');
+    var privilegeDescription = crossScopePrivileges.getValue('description');
 
-})(finding, current);
+    // Output privilege details for investigation
+    gs.info('Cross Scope Privilege: ' + privilegeName);
+    gs.info('Description: ' + privilegeDescription);
+
+    // Add your investigation logic here to determine whether the privilege is needed
+    // You might want to add conditional checks, call external APIs, or involve other relevant data
+    
+    // If it's determined that the privilege can be removed, you can add logic here to remove it
+    // Be careful with this step, as removing privileges may impact the application
+
+    // Log your investigation results and actions taken
+    gs.info('Investigation results: [YOUR_RESULT]');
+    
+    // You can add logic for regression testing here if needed, considering the application size
+
+    // If you decide to remove the privilege, you can use GlideRecord.deleteRecord()
+    // crossScopePrivileges.deleteRecord();
+}
+
+// You should add appropriate logging, error handling, and testing in your instance
+Please replace 'YOUR_CUSTOM_APP_NAME' and [YOUR_RESULT] with your specific custom application name and the results of your investigation, respectively.
+
+Remember that this script is a starting point, and it's essential to thoroughly test it in a development or sandbox environment before using it in your production instance. Removing privileges can have serious implications, so be cautious and consider creating a backup or a change request process in your ServiceNow instance for added control.
