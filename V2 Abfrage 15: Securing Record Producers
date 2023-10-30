@@ -10,6 +10,8 @@ If appropriate roles are not assigned to record producers then, an unauthorized 
 //ServiceNow Field: "Resolution Details"
 Record producers should be assigned appropriate role, record producer script should secure GlideRecord and/or GlideSystem API calls.
 
+//Answer
+
 To address the ServiceNow request, you can create a server-side script in ServiceNow that checks if the appropriate roles are assigned to record producers and secures GlideRecord and GlideSystem API calls. Here's a JavaScript script that you can use as a starting point:
 
 javascript
