@@ -10,15 +10,68 @@ Reports shared with a role which does not exist might lead to unforeseen behavio
 //ServiceNow Field: "Resolution Details"
 Reports shared with a role which does not exist might lead to unforeseen behaviour, once a role with this name is created and immediately all the reports are shared with this role. Consider removing the role by editing the report and only share the report with valid roles.
 
-//ServiceNow Field "Script"
-(function(finding, current) {
+//Answer
+To create a JavaScript script for the given ServiceNow request, you can use the following code to validate the "Description" and "Resolution Details" fields and take appropriate actions. This script checks if a role mentioned in these fields exists, and if it doesn't, it creates the role and shares all reports with it. You should add this script in a business rule or script include in your ServiceNow instance, depending on your specific requirements.
 
-    var list = current.roles.split(',');
-    for (var i = 0; i < list.length; i++) {
-        var validator = new GlideRecord('sys_user_role');
-        if (!validator.get('name', list[i])) {
-            finding.increment();
+javascript
+Copy code
+(function executeRule(current, previous /*, display*/ ) {
+    // Get the "Description" field value
+    var description = current.description;
+
+    // Get the "Resolution Details" field value
+    var resolutionDetails = current.resolution_details;
+
+    // Extract role names mentioned in both fields
+    var rolesInDescription = extractRoleNames(description);
+    var rolesInResolutionDetails = extractRoleNames(resolutionDetails);
+
+    // Combine the role names from both fields
+    var allRoles = rolesInDescription.concat(rolesInResolutionDetails);
+
+    // Check if each role exists, and if not, create it
+    for (var i = 0; i < allRoles.length; i++) {
+        var roleName = allRoles[i];
+        if (!roleExists(roleName)) {
+            // Role doesn't exist, so create it
+            createRole(roleName);
+            // Share all reports with the newly created role
+            shareReportsWithRole(roleName);
         }
     }
+})(current, previous);
 
-})(finding, current);
+// Helper function to extract role names from a text
+function extractRoleNames(text) {
+    var roleNames = [];
+    var roleRegex = /(?:role|group):\s*([^\s,]+)/g;
+    var match;
+
+    while ((match = roleRegex.exec(text)) !== null) {
+        roleNames.push(match[1]);
+    }
+
+    return roleNames;
+}
+
+// Helper function to check if a role exists
+function roleExists(roleName) {
+    // You should implement your logic to check if the role exists in your ServiceNow instance.
+    // You can use GlideRole or other APIs for this.
+    // For simplicity, we assume the role exists.
+    return true;
+}
+
+// Helper function to create a role
+function createRole(roleName) {
+    // You should implement your logic to create a role in your ServiceNow instance.
+    // You can use GlideRole or other APIs for this.
+    // For simplicity, we assume the role is created.
+}
+
+// Helper function to share all reports with a role
+function shareReportsWithRole(roleName) {
+    // You should implement your logic to share reports with the specified role.
+    // This involves updating report records or any other related tables as per your instance's data structure.
+}
+Please note that you need to implement the actual logic for checking if a role exists and for creating a role in your ServiceNow instance. The script assumes that the roles exist for simplicity. Additionally, you should implement the logic for sharing reports with the created role according to your instance's data structure.
