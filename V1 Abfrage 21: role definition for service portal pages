@@ -3,6 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
+//please program a javascript script solution for the following servicenow request:
 /ServiceNow Field: "Description"
 All service portal pages must have specific role defined at page level to restrict access to required audience.
 
