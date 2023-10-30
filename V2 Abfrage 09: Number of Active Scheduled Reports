@@ -3,7 +3,8 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//please program a javascript script solution for the following servicenow request:
+//ServiceNow Field: "Description"
 Number of Active Scheduled Reports.  Scheduled reports export data which is no longer protected by ACLs and is no longer trackable.
 
 //ServiceNow Field: "Resolution Details"
