@@ -10,4 +10,28 @@ All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option s
 //ServiceNow Field: "Resolution Details"
 All Processors of type - SCRIPT must be protected with CSRF Token. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
-//ServiceNow Field "Script"
+//Answer
+In ServiceNow, you can enforce CSRF protection for specific processor types using business rules and client scripts. You'll need to create a client script to check if the processor type is "SCRIPT" and then ensure that the CSRF Option is checked. You can use the following JavaScript code as a starting point to achieve this:
+
+javascript
+Copy code
+// Check if the current field is "Description" or "Resolution Details"
+if (current.name == 'description' || current.name == 'resolution_details') {
+    // Check if the processor type is "SCRIPT"
+    if (current.processor_type == 'SCRIPT') {
+        // Check if the CSRF Option is not already checked
+        if (!current.csrf_protection) {
+            // Display a warning message
+            gs.addWarningMessage("CSRF protection is not enabled for this processor type. Please enable CSRF protection.");
+        }
+    }
+}
+Here's a breakdown of the code:
+
+We check if the current field is either "description" or "resolution_details" by comparing current.name with these field names.
+
+We then check if the processor type is "SCRIPT" by comparing current.processor_type with the string "SCRIPT".
+
+If the processor type is "SCRIPT," we check if the CSRF Option is not already checked. If it's not checked, we add a warning message using gs.addWarningMessage.
+
+You would need to attach this client script to the "Description" and "Resolution Details" fields in ServiceNow and configure it to run when the processor type is being modified or when the CSRF Option is being modified. This script will provide a warning message if the CSRF Option is not enabled for a "SCRIPT" processor type. You can customize the warning message to suit your needs.
