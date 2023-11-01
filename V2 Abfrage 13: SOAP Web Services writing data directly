@@ -17,8 +17,6 @@ To create a scripted web service in ServiceNow that allows you to insert, update
 Create a Script Include:
 First, create a Script Include that contains the functions to handle your insert, update, and delete operations. Here's an example of a script include named "MyDataOperations":
 
-javascript
-Copy code
 var MyDataOperations = Class.create();
 MyDataOperations.prototype = {
   initialize: function() {},
@@ -80,8 +78,6 @@ You can now test your Scripted Web Service by making HTTP requests to the API en
 
 Here's an example of how to use cURL to insert a record:
 
-bash
-Copy code
 curl -X POST -H "Content-Type: application/json" -d '{"tableName": "incident", "data": {"short_description": "New Incident"}}' -u username:password https://your-instance.service-now.com/api/your-api-name/insertData
 Replace "username," "password," "your-instance," "your-api-name," and the JSON data with your specific information.
 
