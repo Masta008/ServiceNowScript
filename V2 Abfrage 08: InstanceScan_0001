@@ -4,7 +4,7 @@
 
 //User 
 //please program a javascript script solution for the following servicenow request:
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 x
 //ServiceNow Field: "Resolution Details"
 ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
@@ -16,8 +16,6 @@ Installieren Sie die Anwendung „ACL Assessment for Reports“ aus dem ServiceN
 //Answer
 You can use JavaScript to create a script that generates the desired output for your ServiceNow request. Here's a script that takes the English and German versions of the request and combines them into the "Description" and "Resolution Details" fields:
 
-javascript
-Copy code
 // English and German versions of the request
 const englishRequest = `ServiceNow Field: "Description"
 ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
