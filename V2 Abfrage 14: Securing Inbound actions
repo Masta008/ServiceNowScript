@@ -11,55 +11,44 @@ Verify all the senders must have required role to trigger inbound action.
 All inbound actions should have roles mentioned in "Required roles" field to secure actions triggered from inbound actions, only users with the required roles should be allowed to trigger inbound action
 
 //Answer
-To enforce the mentioned requirements in ServiceNow, you can use a business rule. ServiceNow provides the capability to write server-side scripting using GlideRecord API, which allows you to perform various actions before or after records are inserted, updated, or deleted. You can use business rules to add server-side scripting to achieve this. Here's a JavaScript script that you can use for your ServiceNow request:
 
-(function executeRule(current, previous /*previous*/) {
-    // Define the required roles for inbound actions
-    var requiredRolesField = current.required_roles; // Replace with the actual field name
+To verify that all the senders of inbound actions have the required role to trigger the action, you can write a JavaScript script in ServiceNow. You'll need to create a script include or use a business rule, depending on your specific requirements. Here's a general JavaScript solution that you can use as a starting point:
 
-    // Check if the current user has the required roles
-    if (!hasRequiredRoles(current, requiredRolesField)) {
-        // Prevent the inbound action from being triggered
-        gs.addErrorMessage("You do not have the required roles to trigger this inbound action.");
-        current.setAbort(true);
-    }
-})(current, previous);
+// This script assumes that you have a table for inbound actions with a "Required Roles" field
+// and that you want to enforce the role check for each inbound action.
 
-/**
- * Check if the current user has the required roles.
- * @param {GlideRecord} current - The current record.
- * @param {string} requiredRolesField - The name of the field containing required roles.
- * @returns {boolean} - True if the user has required roles, false otherwise.
- */
-function hasRequiredRoles(current, requiredRolesField) {
-    // Get the required roles from the field
-    var requiredRoles = current.getValue(requiredRolesField);
+(function () {
+    // Specify the table name where your inbound actions are stored
+    var tableName = 'your_inbound_actions_table_name';
 
-    if (gs.nil(requiredRoles)) {
-        // If no required roles are specified, allow the action
-        return true;
-    }
+    // Retrieve all records from the specified table
+    var gr = new GlideRecord(tableName);
+    gr.query();
 
-    // Get the current user's roles
-    var userRoles = gs.getUser().getRoles();
+    while (gr.next()) {
+        var requiredRoles = gr.getValue('required_roles'); // Change this field name to match your field's name
+        var sender = gr.getValue('sender'); // Change this field name to match your sender field's name
 
-    // Check if the user has any of the required roles
-    for (var i = 0; i < requiredRoles.length(); i++) {
-        if (userRoles.indexOf(requiredRoles[i]) !== -1) {
-            return true; // User has at least one required role
+        if (!requiredRoles || !sender) {
+            // If required roles or sender is not set, skip this record
+            continue;
+        }
+
+        // Check if the sender has the required roles
+        var senderUser = new GlideUser(sender);
+        if (!senderUser.hasRoles(requiredRoles)) {
+            // If the sender does not have the required roles, log an error or take necessary actions
+            gs.error('Sender ' + sender + ' does not have the required roles to trigger the inbound action with sys_id: ' + gr.sys_id);
         }
     }
+})();
+Here's what the script does:
 
-    return false; // User does not have any required role
-}
-This script does the following:
-
-It checks the required_roles field on the current record to determine the roles required to trigger the inbound action.
-
-It checks if the current user has any of the required roles. If the user does not have the required roles, it prevents the inbound action from being triggered and adds an error message.
-
-The hasRequiredRoles function checks if the current user has any of the required roles specified in the field. If no required roles are specified, it allows the action.
-
-Make sure to replace required_roles with the actual field name where you store the required roles.
-
-You can create a business rule in ServiceNow and set it to run on the appropriate table (e.g., the table where your inbound actions are stored). Use this script in the "Script" section of the business rule.
+Specify the name of your inbound actions table.
+Query all records from the specified table.
+For each record, it retrieves the "Required Roles" and "Sender" fields.
+It checks if both the "Required Roles" and "Sender" fields have values.
+It creates a GlideUser object for the sender.
+It checks if the sender has the required roles using the hasRoles method.
+If the sender doesn't have the required roles, it logs an error message.
+You can modify this script according to your specific requirements and integrate it into your ServiceNow instance using business rules or script includes to enforce the role checks for inbound actions.
