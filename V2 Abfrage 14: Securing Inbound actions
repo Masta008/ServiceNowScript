@@ -13,8 +13,6 @@ All inbound actions should have roles mentioned in "Required roles" field to sec
 //Answer
 To enforce the mentioned requirements in ServiceNow, you can use a business rule. ServiceNow provides the capability to write server-side scripting using GlideRecord API, which allows you to perform various actions before or after records are inserted, updated, or deleted. You can use business rules to add server-side scripting to achieve this. Here's a JavaScript script that you can use for your ServiceNow request:
 
-javascript
-Copy code
 (function executeRule(current, previous /*previous*/) {
     // Define the required roles for inbound actions
     var requiredRolesField = current.required_roles; // Replace with the actual field name
