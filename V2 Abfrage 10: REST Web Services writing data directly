@@ -17,8 +17,7 @@ To accomplish the task you described, you need to create a JavaScript script tha
 
 Create a Script Include:
 Create a Script Include in your ServiceNow instance to handle operations related to the "Resolution Details" field. This Script Include should have methods to insert, update, and delete data. Here's an example of how the Script Include might look:
-javascript
-Copy code
+
 // Script Include: MyScriptInclude
 
 var MyScriptInclude = Class.create();
@@ -47,8 +46,6 @@ Define a Scripted Web Service that exposes endpoints to insert, update, and dele
 JavaScript Script:
 Now, create a JavaScript script that interacts with your Scripted Web Service to perform the required operations. Below is an example of how you can structure the JavaScript script:
 
-javascript
-Copy code
 // Define your REST endpoint URL
 var endpointURL = 'https://your-instance.service-now.com/api/your-scripted-web-service-endpoint';
 
