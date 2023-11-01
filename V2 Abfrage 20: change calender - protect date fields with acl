@@ -13,8 +13,6 @@ It is recommended to use ACLs to secure those date fields rather than UI Policie
 //Answer
 To address the ServiceNow request, you can use a JavaScript script to enforce security for the "Planned Start" and "Planned End" date fields and recommend the use of ACLs for the "Resolution Details" field. You can use a client-side script to prevent users from modifying these fields in the list view. Here's a sample JavaScript solution:
 
-javascript
-Copy code
 (function () {
     // Define the field names and their respective ACL names
     const sensitiveFields = {
