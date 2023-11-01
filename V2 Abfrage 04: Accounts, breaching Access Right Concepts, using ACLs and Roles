@@ -14,8 +14,6 @@ All accounts having privileged access, including admin or security_admin, should
 //Answer
 To create a JavaScript script to address the ServiceNow request you provided, you can use a server-side script in ServiceNow. Below is a sample script that you can adapt and use as an "OnSubmit" business rule, which runs when a record is submitted. This script checks the "Description" field for specific keywords and populates the "Resolution Details" field based on the content of the "Description" field.
 
-javascript
-Copy code
 (function executeRule(current, previous /*, display_error*/ ) {
   var description = current.description.getDisplayValue();
   var resolutionDetails = "";
