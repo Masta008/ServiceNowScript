@@ -13,8 +13,6 @@ Be aware of data leaving the instance.
 //Answer
 To create a JavaScript script for a ServiceNow request that counts the number of active scheduled reports and provides a warning in the "Resolution Details" field, you can use ServiceNow's GlideAggregate API. Here's a sample script that you can use as a starting point. This script should be run in a business rule, script include, or a similar context within ServiceNow:
 
-javascript
-Copy code
 // Check for active scheduled reports
 var scheduledReportCount = 0;
 
