@@ -21,8 +21,6 @@ Create a new UI Action or edit an existing one.
 
 In the UI Action form, you can set the conditions and visibility criteria using the script fields. Below is a sample JavaScript script for a UI Action in the "Description" field:
 
-javascript
-Copy code
 (function() {
   // Check if the user has no roles and doesn't have read access to the table
   if (!g_user.hasRoles() && !g_user.hasReadAccess('your_table_name')) {
