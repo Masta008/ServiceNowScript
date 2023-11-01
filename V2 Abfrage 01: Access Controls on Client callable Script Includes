@@ -14,8 +14,6 @@ Any logged-in users with minimum snc_internal can access an unprotected CCSI by 
 //Answer
 To address the ServiceNow request for creating an Access Control List (ACL) for a Client Callable Script Include (CCSI), you can use JavaScript to create the ACL. Below is a JavaScript script that you can use in your ServiceNow instance to define the required roles for accessing a Client Callable Script Include. Please note that this script should be run in a ServiceNow environment with administrative privileges:
 
-javascript
-Copy code
 // Define the name of the Client Callable Script Include
 var scriptIncludeName = 'YourClientCallableScriptIncludeName';
 
