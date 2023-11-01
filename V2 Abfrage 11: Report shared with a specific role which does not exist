@@ -13,8 +13,6 @@ Reports shared with a role which does not exist might lead to unforeseen behavio
 //Answer
 To create a JavaScript script for the given ServiceNow request, you can use the following code to validate the "Description" and "Resolution Details" fields and take appropriate actions. This script checks if a role mentioned in these fields exists, and if it doesn't, it creates the role and shares all reports with it. You should add this script in a business rule or script include in your ServiceNow instance, depending on your specific requirements.
 
-javascript
-Copy code
 (function executeRule(current, previous /*, display*/ ) {
     // Get the "Description" field value
     var description = current.description;
