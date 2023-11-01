@@ -4,7 +4,7 @@
 
 //User 
 //please program a javascript script solution for the following servicenow request:
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
 //ServiceNow Field: "Resolution Details"
@@ -13,8 +13,6 @@ All Processors of type - SCRIPT must be protected with CSRF Token. This Option i
 //Answer
 In ServiceNow, you can enforce CSRF protection for specific processor types using business rules and client scripts. You'll need to create a client script to check if the processor type is "SCRIPT" and then ensure that the CSRF Option is checked. You can use the following JavaScript code as a starting point to achieve this:
 
-javascript
-Copy code
 // Check if the current field is "Description" or "Resolution Details"
 if (current.name == 'description' || current.name == 'resolution_details') {
     // Check if the processor type is "SCRIPT"
