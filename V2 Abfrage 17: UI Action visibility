@@ -11,41 +11,32 @@ Checks to see if the UI Action can be accessed by a user with no roles who does 
 Use conditions or visibility criteria to restrict access to UI Actions.
 
 //Answer
-In ServiceNow, you can use Business Rules and UI Policies to control access to UI Actions based on conditions or visibility criteria. To achieve the requested functionality for the "Description" and "Resolution Details" fields, you can use a combination of client-side scripting and UI Policies.
+To restrict access to a UI Action in ServiceNow for users with no roles who do not have read access to the table, you can use client-side scripting. Here's a JavaScript script that you can use to achieve this:
 
-Here's a JavaScript script solution that demonstrates how to restrict access to UI Actions based on user roles and table read access:
-
-Go to "UI Actions" in your ServiceNow instance.
-
-Create a new UI Action or edit an existing one.
-
-In the UI Action form, you can set the conditions and visibility criteria using the script fields. Below is a sample JavaScript script for a UI Action in the "Description" field:
-
-(function() {
-  // Check if the user has no roles and doesn't have read access to the table
-  if (!g_user.hasRoles() && !g_user.hasReadAccess('your_table_name')) {
-    // If the condition is met, hide the UI Action
-    g_ui_hide_actions = true;
+(function () {
+  // Check if the user has any roles
+  var userHasRoles = g_user.hasRoles();
+  
+  // Check if the user has read access to the table
+  var userHasReadAccess = g_user.hasReadAccess('YOUR_TABLE_NAME'); // Replace 'YOUR_TABLE_NAME' with the actual table name
+  
+  // Get the UI Action element (replace 'sysverb_your_ui_action_name' with the actual UI Action sys_id)
+  var uiAction = g_form.getActionByName('sysverb_your_ui_action_name');
+  
+  if (!userHasRoles && !userHasReadAccess) {
+    // Disable the UI Action for users with no roles and no read access
+    uiAction.setVisible(false);
+  } else {
+    // Enable the UI Action for other users
+    uiAction.setVisible(true);
   }
 })();
-Replace 'your_table_name' with the actual name of the table you want to check access for.
+In this script:
 
-Similarly, you can create a UI Action for the "Resolution Details" field with a similar script. Here's an example:
-javascript
-Copy code
-(function() {
-  // Check if the user has no roles and doesn't have read access to the table
-  if (!g_user.hasRoles() && !g_user.hasReadAccess('your_table_name')) {
-    // If the condition is met, hide the UI Action
-    g_ui_hide_actions = true;
-  }
-})();
-Remember to replace 'your_table_name' with the actual name of the table.
+We first check if the user has any roles using g_user.hasRoles().
+We then check if the user has read access to the table by using g_user.hasReadAccess('YOUR_TABLE_NAME'). Make sure to replace 'YOUR_TABLE_NAME' with the actual name of the table you want to check read access for.
+We get the UI Action element using g_form.getActionByName('sysverb_your_ui_action_name'). Replace 'sysverb_your_ui_action_name' with the actual sys_id of your UI Action.
+Depending on the conditions, we either hide or show the UI Action using uiAction.setVisible(false) or uiAction.setVisible(true).
+You should add this script to the UI Action's "Client" script field. Make sure to replace 'YOUR_TABLE_NAME' and 'sysverb_your_ui_action_name' with the appropriate values for your use case.
 
-After defining the scripts, save the UI Action.
-
-Create a UI Policy to conditionally show or hide the UI Action based on the "Description" or "Resolution Details" field. You can use the "Condition" field of the UI Policy to specify the conditions when the UI Action should be displayed.
-
-This approach will hide the UI Action for users with no roles and no read access to the table. Ensure that you have the appropriate roles and permissions to create and manage UI Actions and UI Policies in your ServiceNow instance.
-
-Make sure to thoroughly test the behavior of these UI Actions in your ServiceNow instance to ensure they meet your access control requirements.
+This script will hide the UI Action for users with no roles and no read access to the specified table, effectively restricting access as per your requirements.
