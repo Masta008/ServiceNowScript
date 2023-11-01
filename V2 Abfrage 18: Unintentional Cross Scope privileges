@@ -14,8 +14,6 @@ Removing privileges might require regression testing to ensure that nothing will
 //Answer
 To create a JavaScript script for your ServiceNow request, you can use ServiceNow's scripting capabilities, specifically, Business Rules. Here's an example script that you can use as a starting point to automate the investigation and potential removal of Cross Scope privileges in a custom application's development environment. This script will need to be adapted and thoroughly tested in your specific ServiceNow instance.
 
-javascript
-Copy code
 // Define the table where Cross Scope privileges are stored (assuming it's a custom table)
 var crossScopePrivilegesTable = 'x_custom_cross_privileges';
 
