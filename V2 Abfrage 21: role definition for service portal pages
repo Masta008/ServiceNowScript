@@ -15,8 +15,6 @@ To ensure that all service portal pages in ServiceNow have specific roles define
 
 Here's a sample JavaScript script that you can use to achieve this in ServiceNow:
 
-javascript
-Copy code
 // Define the required roles
 var requiredRoles = ['role1', 'role2'];
 
