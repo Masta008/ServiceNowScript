@@ -13,8 +13,6 @@ Make sure to define roles on service portal widget to limit access to required a
 //Answer
 To create a JavaScript script for your ServiceNow request, you can use ServiceNow's server-side scripting capabilities. In this case, it seems like you want to enforce a rule that all service portal widgets have specific roles defined at the widget level. You can do this with a business rule in ServiceNow. Here's a sample script that you can use as a starting point:
 
-javascript
-Copy code
 // Business Rule Script
 
 (function executeRule(current, previous /*, display_error*/) {
