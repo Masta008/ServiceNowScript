@@ -13,21 +13,18 @@ https://docs.servicenow.com/csh?topicname=c_ScriptedWebServices.html
 
 //ServiceNow Field "Script"
 
-
 //Answer ChatGPT
 Certainly! In ServiceNow, you can create scripted web services to perform insert, update, and delete operations directly through script includes. This allows you to expose these operations as RESTful endpoints that can be accessed externally.
 
 Here's a high-level overview of how you can achieve this:
 
     Create a Script Include: First, you need to create a script include in ServiceNow. This script include will contain the JavaScript code that handles the insert, update, and delete operations.
-
+    
     Define Functions: In the script include, define functions for the operations you want to perform. For example, you can create functions like insertRecord, updateRecord, and deleteRecord.
-
+    
     Write the Logic: Within each function, write the logic to perform the respective database operation. You can use GlideRecord to interact with tables in ServiceNow.
 
-    Example for inserting a record:
-
-    javascript
+Example for inserting a record:
 
 var myTable = new GlideRecord('your_table_name');
 myTable.initialize();
@@ -37,8 +34,6 @@ var sysId = myTable.insert();
 
 Example for updating a record:
 
-javascript
-
 var myTable = new GlideRecord('your_table_name');
 if (myTable.get('sys_id', sysId)) {
     myTable.field1 = 'updated_value';
@@ -47,16 +42,12 @@ if (myTable.get('sys_id', sysId)) {
 
 Example for deleting a record:
 
-javascript
-
 var myTable = new GlideRecord('your_table_name');
 if (myTable.get('sys_id', sysId)) {
     myTable.deleteRecord();
 }
 
 Expose Functions as Web Services: Once you have defined your functions, you can expose them as web services by annotating them with @rest_access and specifying the HTTP methods you want to allow (e.g., GET, POST, PUT, DELETE).
-
-javascript
 
     var YourScriptInclude = Class.create();
     YourScriptInclude.prototype = {
