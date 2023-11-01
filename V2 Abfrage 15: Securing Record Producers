@@ -14,8 +14,6 @@ Record producers should be assigned appropriate role, record producer script sho
 
 To address the ServiceNow request, you can create a server-side script in ServiceNow that checks if the appropriate roles are assigned to record producers and secures GlideRecord and GlideSystem API calls. Here's a JavaScript script that you can use as a starting point:
 
-javascript
-Copy code
 (function executeRule(current, previous /* other possible inputs */) {
     // Check if the current record is a Record Producer
     if (current.getValue('producer') === true) {
