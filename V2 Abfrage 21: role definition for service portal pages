@@ -13,8 +13,6 @@ Make sure to define roles on service portal page to limit access to required aud
 //Answer
 To create a JavaScript script solution for your ServiceNow request, you can use the ServiceNow API to work with records in the "Description" and "Resolution Details" fields of the incident table. Below is a sample script that demonstrates how to accomplish this task:
 
-javascript
-Copy code
 // Set the table name and record sys_id
 var tableName = 'incident'; // Replace with the appropriate table name
 var recordSysID = 'YOUR_INCIDENT_SYS_ID'; // Replace with the actual sys_id
