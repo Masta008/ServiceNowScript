@@ -13,8 +13,6 @@ UI Pages making call to server side code should have ACL's implemented.
 //Answer
 To address the ServiceNow request, you need to ensure that UI Pages have ACLs implemented to control access. You can create an ACL (Access Control List) for your UI Page to restrict access based on specific conditions. In your case, you want to restrict access to users who have specific roles or permissions. Below is a JavaScript script that you can use to create an ACL for a UI Page in ServiceNow:
 
-javascript
-Copy code
 // Set the name of your UI Page and the roles that should have access
 var uiPageName = 'your_ui_page_name';
 var allowedRoles = ['user_admin', 'other_required_roles'];
