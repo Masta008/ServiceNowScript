@@ -12,35 +12,40 @@ internal_integration_user field on user record can be checked, i.e. if any of th
 Run as user in automated scripts should have internal_integration_user field checked in user record'
 
 //Answer
-To create a JavaScript script solution for the ServiceNow request you provided, you can use ServiceNow's scripting capabilities. Here's a script that accomplishes the described tasks for the "Description" and "Resolution Details" fields:
+To achieve this in ServiceNow, you can use a script that checks if any of the integration methods are active and the internal_integration_user field is not set to true for any user record. You can use a scheduled background script to periodically perform this check. Here's a JavaScript script for this purpose:
 
-// ServiceNow Business Rule or Script (e.g., onSubmit) for the "Description" field
-(function executeRule(current, previous /*, gs*/) {
-    // Check if the internal_integration_user field is not true for the current user
-    if (!current.internal_integration_user) {
-        // Check if any integration method is active
-        var activeIntegration = false;
+// Scheduled background script to check user records for active integrations
 
-        // Implement logic to check if any integration method is active for the current user
-        // You may need to query related records or use specific conditions for integration methods
+(function () {
+    // Define the integration methods that need to be checked for activity
+    var integrationMethodsToCheck = ['integrationMethod1', 'integrationMethod2', 'integrationMethod3'];
 
-        if (activeIntegration) {
-            // Create a finding record or take the appropriate action
-            // You can use current or other functions to log findings, e.g., current.log_error()
+    // Create a GlideRecord query to fetch user records
+    var userRecord = new GlideRecord('sys_user');
+    userRecord.addQuery('active', true);
+    userRecord.query();
+
+    while (userRecord.next()) {
+        var userActive = false; // Flag to track if any active integration is found
+
+        // Check each integration method
+        for (var i = 0; i < integrationMethodsToCheck.length; i++) {
+            var integrationMethod = userRecord.getValue(integrationMethodsToCheck[i]);
+            if (integrationMethod === true) {
+                userActive = true;
+                break; // No need to check further if an active integration is found
+            }
+        }
+
+        // If no active integration is found and internal_integration_user is not true, record a finding
+        if (!userActive && !userRecord.internal_integration_user) {
+            gs.log('Finding: User ' + userRecord.user_name + ' has no active integration method.');
+            // You can log the finding or take other actions as needed
         }
     }
-})(current, previous);
+})();
+Please replace 'integrationMethod1', 'integrationMethod2', and 'integrationMethod3' with the actual field names that represent the integration methods in your ServiceNow instance.
 
-// ServiceNow Business Rule or Script (e.g., onSubmit) for the "Resolution Details" field
-(function executeRule(current, previous /*, gs*/) {
-    // Check if the user running the automated script has the internal_integration_user field checked
-    if (!gs.hasRole('admin') && !gs.hasRole('script')) {
-        var user = gs.getUser();
-        if (!user.internal_integration_user) {
-            // Log an error or take the appropriate action, e.g., reject the script execution
-            gs.addErrorMessage("The user running the script does not have internal_integration_user checked.");
-            current.setAbortAction(true); // Abort the script execution
-        }
-    }
-})(current, previous);
-Please note that the script above is a basic example and should be integrated into ServiceNow with proper considerations for your specific ServiceNow instance. You'll need to adapt the logic to your organization's user integration methods and processes. Additionally, the script assumes certain conditions; you should replace the comments with your actual business logic and integration method checks.
+You can schedule this script to run at regular intervals using a scheduled job in ServiceNow. It will iterate through user records, check the specified integration methods, and log a finding if no active integration is found and internal_integration_user is not true for any user.
+
+Make sure to test the script in a non-production environment first and adapt it to your specific ServiceNow instance's schema and needs.
