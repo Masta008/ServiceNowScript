@@ -21,8 +21,6 @@ Click on "New" to create a new Script Include.
 Name it, e.g., "ResolutionDetailsHandler."
 Here's a sample Script Include for managing "Resolution Details" (make sure to customize it as per your business logic):
 
-javascript
-Copy code
 var ResolutionDetailsHandler = Class.create();
 ResolutionDetailsHandler.prototype = Object.extendsObject(AbstractAjaxProcessor, {
   // Constructor
@@ -51,8 +49,6 @@ Script Include: Select the "ResolutionDetailsHandler" Script Include created in 
 Define an Endpoint with a Resource Path (e.g., /description-handler).
 Here's a sample Scripted REST API script (customize as needed):
 
-javascript
-Copy code
 (function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
   var description = request.body.data.description;
   var newResolution = request.body.data.newResolution;
