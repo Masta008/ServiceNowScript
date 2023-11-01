@@ -14,8 +14,6 @@ Run as user in automated scripts should have internal_integration_user field che
 //Answer
 To create a JavaScript script solution for the ServiceNow request you provided, you can use ServiceNow's scripting capabilities. Here's a script that accomplishes the described tasks for the "Description" and "Resolution Details" fields:
 
-javascript
-Copy code
 // ServiceNow Business Rule or Script (e.g., onSubmit) for the "Description" field
 (function executeRule(current, previous /*, gs*/) {
     // Check if the internal_integration_user field is not true for the current user
