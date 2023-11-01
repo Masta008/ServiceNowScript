@@ -13,8 +13,6 @@ Make sure that all tables should have ACL's. Rules for access control lists (ACL
 //Answer
 To address the ServiceNow request you mentioned, you can create a JavaScript script that enforces Access Control Lists (ACLs) for tables in your ServiceNow instance. ACLs allow you to restrict access to data by defining rules that users must meet before they can interact with the data. Here's a script that can help you ensure that all tables have ACLs:
 
-javascript
-Copy code
 (function () {
   // Specify the table names for which you want to create ACLs
   var tablesToSecure = [
