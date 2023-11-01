@@ -4,7 +4,7 @@
 
 //User 
 //please program a javascript script solution for the following servicenow request:
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.
 
 //ServiceNow Field: "Resolution Details"
@@ -14,8 +14,6 @@ Install the ACL Assessment for Reports application from the ServiceNow store. Se
 //Answer
 To automate the ServiceNow request for enabling Report View ACLs, you can use JavaScript in a script include or background script. Below is a JavaScript script that simulates the steps needed to fulfill the request, including updating the "Description" and "Resolution Details" fields:
 
-javascript
-Copy code
 // User input: Specify the relevant table name and record sys_id
 var tableName = "incident"; // Replace with your table name
 var recordSysID = "your_record_sys_id"; // Replace with the actual record sys_id
