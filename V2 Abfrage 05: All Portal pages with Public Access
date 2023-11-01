@@ -13,8 +13,6 @@ Please make sure that Public field is set to false in portal pages unless its ne
 //Answer
 You can create a JavaScript script in ServiceNow that will address the ServiceNow request. This script can be run as a business rule or script include, depending on your specific requirements. Below is an example of how you can achieve this by updating the "Description" and "Resolution Details" fields when a record is updated.
 
-javascript
-Copy code
 (function executeRule(current, previous) {
   // Define the ServiceNow fields
   var descriptionField = current.description;
