@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
 //ServiceNow Field: "Resolution Details"
