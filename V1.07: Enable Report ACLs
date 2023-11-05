@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.
 
 //ServiceNow Field: "Resolution Details"
