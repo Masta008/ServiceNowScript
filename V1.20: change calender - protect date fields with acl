@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 Planned Start and End date of change records are very sensitive and should be protected.  UI Policies applied to the date fields on the form are not effecitve because users can still update it for example in list view.
 
 //ServiceNow Field: "Resolution Details"
