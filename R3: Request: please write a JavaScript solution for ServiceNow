@@ -1,0 +1,28 @@
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//Request: please write a JavaScript solution for ServiceNow
+
+//Answer
+The provided JavaScript code is intended to create an access control rule (ACL) for a client callable script include in ServiceNow. The ACL checks whether a given client callable script include is protected by required roles. If not, it increments a finding and associates it with the current record.
+
+Here's a breakdown of the code:
+
+It starts by defining an anonymous function with two parameters, finding and current, which are objects used within the ServiceNow system.
+
+Inside the function, it creates a new GlideRecord object for the 'sys_security_acl' table.
+
+It adds two conditions to the GlideRecord object:
+
+It filters records with the 'type' field equal to 'client_callable_script_include'.
+It checks if the 'name' field contains the name of the current script include.
+It then executes the query and checks if there's no next record in the result set (i.e., if no matching ACL record is found).
+
+If no matching ACL record is found, it sets the current record as the source of the finding and increments the finding.
+
+This code is designed to enforce security by ensuring that client callable script includes have the necessary access control rules defined. If not, it logs a finding to alert administrators or developers.
+
+If you have a specific question or need further assistance with this code, please let me know, and I'll be happy to help.
