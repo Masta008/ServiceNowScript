@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
 //ServiceNow Field: "Resolution Details"
