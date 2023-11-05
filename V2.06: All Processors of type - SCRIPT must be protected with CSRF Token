@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//please program a javascript script solution for the following servicenow request:
+//Please program a JavaScript script solution for the following ServiceNow request:
 //ServiceNow Field: "Description"
 All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
