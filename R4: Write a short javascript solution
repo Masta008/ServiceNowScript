@@ -1,0 +1,28 @@
+
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//Write a short javascript solution
+
+//Answer ChatGPT
+It appears that you want to enforce access control rules for a ServiceNow script include using a client callable script include. The code you've provided is a script that checks whether an access control list (ACL) exists for the client callable script include and increments a "finding" if it doesn't. If the "finding" count increases, it suggests that an ACL needs to be created for the script include.
+
+Here's a JavaScript solution that performs this task:
+
+(function (finding, current) {
+    // Create a GlideRecord query to check for the existence of an ACL for the script include.
+    var gr_acl = new GlideRecord('sys_security_acl');
+    gr_acl.addQuery('type', 'client_callable_script_include');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    gr_acl.query();
+
+    if (!gr_acl.next()) {
+        // If no ACL is found, increment the "finding" count and set the current source.
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+})(finding, current);
+This script uses the GlideRecord API to query the "sys_security_acl" table for ACLs of type "client_callable_script_include" that contain the name of the current script include. If no matching ACL is found, it increments the "finding" count and sets the current source, indicating that an ACL should be created for this script include to enforce access control.
