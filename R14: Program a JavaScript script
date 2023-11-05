@@ -1,0 +1,38 @@
+Program a javascript script: //ServiceNow Field: "Description"
+When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+
+//ServiceNow Field: "Resolution Details"
+UI Pages making call to server side code should have ACL's implemented.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+	
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','ui_page');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+
+})(finding, current);
+
+ChatGPT
+The provided JavaScript script is intended to identify ServiceNow UI Pages that do not have ACLs (Access Control Lists) implemented, specifically, UI Pages that are missing ACLs with the type 'ui_page' and whose name contains the current UI Page's name.
+
+Here's an explanation of the script:
+
+It takes two parameters: finding and current. These parameters are likely used within a background script or business rule in ServiceNow.
+
+It initializes a GlideRecord gr_acl to query the sys_security_acl table. This table stores ACL records, and the script will query it to find ACLs related to UI Pages.
+
+It adds queries to the gr_acl GlideRecord to filter ACLs based on their type (ui_page) and name (contains the current UI Page's name).
+
+It performs the query by calling gr_acl.query().
+
+If no matching ACL records are found (meaning no ACLs are defined for the current UI Page), it sets the current finding source to the current record (which is the UI Page in question) and increments a counter, possibly indicating that this UI Page is missing an ACL.
+
+However, it's important to note that this script is for identifying UI Pages without ACLs. If you want to enforce security by creating the appropriate ACLs, you would need to develop another script or manually create the necessary ACLs for each UI Page. This script only identifies the UI Pages without ACLs, and it does not create or assign ACLs.
+
+Also, please ensure that the script is appropriately configured and integrated into your ServiceNow instance, and test it in a non-production environment to ensure it meets your specific requirements.
