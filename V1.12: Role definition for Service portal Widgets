@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 All service portal widgets must have specific role defined at widget level to restrict access to required audience.
 
 //ServiceNow Field: "Resolution Details"
