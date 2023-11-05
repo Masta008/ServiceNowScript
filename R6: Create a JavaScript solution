@@ -1,0 +1,42 @@
+Create a javascript solution: //ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//Answer
+It seems like you want to create a JavaScript solution in the context of ServiceNow for securing client callable script includes using Access Control Lists (ACLs). The code you provided appears to be a business rule that checks whether a matching ACL exists for a specific script include. If no ACL is found, it increments a "finding" record.
+
+To create an ACL for client callable script includes, you can use the following code as an example. This code will check for the existence of an ACL, and if not found, it will create one.
+
+javascript
+Copy code
+(function (current) {
+    var scriptIncludeName = current.name;
+    var aclType = 'client_callable_script_include';
+
+    // Check if an ACL already exists for this script include
+    var aclGr = new GlideRecord('sys_security_acl');
+    aclGr.addQuery('type', aclType);
+    aclGr.addQuery('script', scriptIncludeName);
+    aclGr.query();
+
+    if (!aclGr.next()) {
+        // ACL doesn't exist, create a new one
+        var newAclGr = new GlideRecord('sys_security_acl');
+        newAclGr.initialize();
+        newAclGr.type = aclType;
+        newAclGr.script = scriptIncludeName;
+        newAclGr.name = 'ACL for ' + scriptIncludeName;
+        newAclGr.operation = 'execute'; // You can modify the operation as needed
+        newAclGr.condition = ''; // You can set a condition if necessary
+        newAclGr.insert();
+    }
+})(current);
+In this code:
+
+We retrieve the name of the script include from the current object.
+We specify the aclType as 'client_callable_script_include'.
+We query the sys_security_acl table to check if an ACL already exists for the script include.
+If no ACL is found, we create a new ACL and set the required properties such as type, script, name, operation, and condition.
+You can modify this code according to your specific requirements, such as changing the ACL operation or adding a condition to restrict access further.
