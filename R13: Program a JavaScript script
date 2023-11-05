@@ -1,0 +1,43 @@
+Program a JavaScript script: //ServiceNow Field: "Description"
+Reports shared with a role which does not exist might lead to unforeseen behaviour. Once a role with this name is created, immediately all the reports are shared with this role.
+
+//ServiceNow Field: "Resolution Details"
+Reports shared with a role which does not exist might lead to unforeseen behaviour, once a role with this name is created and immediately all the reports are shared with this role. Consider removing the role by editing the report and only share the report with valid roles.
+
+//ServiceNow Field "Script"
+(function(finding, current) {
+
+    var list = current.roles.split(',');
+    for (var i = 0; i < list.length; i++) {
+        var validator = new GlideRecord('sys_user_role');
+        if (!validator.get('name', list[i])) {
+            finding.increment();
+        }
+    }
+
+})(finding, current);
+
+//Answer
+It seems like you have provided a JavaScript script that is intended for use in ServiceNow to validate roles in the "Description" and "Resolution Details" fields of reports. The script checks if the roles specified in the report exist in the 'sys_user_role' table, and if they don't exist, it increments a counter in the "finding" object.
+
+Here's the script you provided with comments:
+
+javascript
+Copy code
+(function(finding, current) {
+    // Split the roles string into an array
+    var list = current.roles.split(',');
+    
+    // Iterate through the roles in the array
+    for (var i = 0; i < list.length; i++) {
+        // Create a GlideRecord object for the 'sys_user_role' table
+        var validator = new GlideRecord('sys_user_role');
+        
+        // Check if the role exists by querying the 'name' field
+        if (!validator.get('name', list[i])) {
+            // If the role does not exist, increment the finding counter
+            finding.increment();
+        }
+    }
+})(finding, current);
+This script checks each role in the current.roles field, and if a role with the specified name does not exist in the 'sys_user_role' table, it increments the "finding" counter. This is a helpful script for ensuring that reports are not shared with roles that do not exist in the system, which can prevent unexpected behavior.
