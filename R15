@@ -1,0 +1,65 @@
+Please program a JavaScript script solution for the following ServiceNow request:
+//"Description"
+When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+
+//"Resolution Details"
+UI Pages making call to server side code should have ACL's implemented.
+
+//Answer
+To address the ServiceNow request, you can create a server-side script that enforces ACL-like access control for UI Pages. In ServiceNow, you can implement such logic using Script Includes. Here's a JavaScript script solution that enforces access control for UI Pages in ServiceNow:
+
+Create a new Script Include in ServiceNow by navigating to "System Definition" -> "Script Includes."
+
+Create a new Script Include, for example, named "CustomUIAccessControl."
+
+In the "CustomUIAccessControl" Script Include, you can add the following code:
+
+javascript
+Copy code
+var CustomUIAccessControl = Class.create();
+CustomUIAccessControl.prototype = {
+  initialize: function() {},
+
+  // Function to check access control for a UI Page
+  checkAccess: function(userSysId, pageName) {
+    // Check if the user has a specific role (e.g., 'user_admin') or other authorization checks.
+    if (!gs.hasRole('user_admin')) {
+      // Deny access to the UI Page
+      gs.log("Access denied for user: " + userSysId + " to UI Page: " + pageName);
+      return false;
+    }
+    
+    // Implement additional ACL-like checks or conditions as needed.
+
+    // Allow access if no restrictions are met
+    return true;
+  },
+
+  type: 'CustomUIAccessControl'
+};
+Save the Script Include.
+
+Now, for each UI Page in ServiceNow, you should define a script that checks access using the CustomUIAccessControl Script Include. Here's an example of how you can implement this within your UI Page server script:
+
+javascript
+Copy code
+// Include the CustomUIAccessControl script include
+var uiAccessControl = new CustomUIAccessControl();
+
+// Get the user's sys_id (you may need to adjust how you get this)
+var userSysId = gs.getUser().getID();
+var pageName = 'your_ui_page_name'; // Replace with the name of your UI Page
+
+// Check access control
+if (uiAccessControl.checkAccess(userSysId, pageName)) {
+  // Implement the logic for your UI Page here.
+  // If access is granted, the user has the necessary roles or permissions.
+  // You can proceed with your UI Page logic here.
+} else {
+  // Access is denied. You can return an error message or redirect the user.
+  // For example:
+  // gs.addErrorMessage("Access denied for this UI Page.");
+  // action.setRedirectURL('your_redirect_url');
+}
+Save your UI Page script.
+By implementing this solution, you ensure that UI Pages making calls to server-side code check for proper access control. You can customize the access control checks within the CustomUIAccessControl Script Include and perform additional checks as needed for your specific use case.
