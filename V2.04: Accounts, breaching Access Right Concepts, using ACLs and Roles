@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//please program a javascript script solution for the following servicenow request:
+//Please program a JavaScript script solution for the following ServiceNow request:
 //ServiceNow Field: "Description"
 Insider Threat.
 Is there any account with Roles assigned and related ACLs configured to enable prohibited data manipulation like deleting records or changing. In order to protect against insiders with elevated or privileged access, access lists and roles should be monitored especially for deletion, the role assignment should be thoroughly reviewed to prevent unlogged/undocumented accounts with extra rights. This is valid throughout the whole platform and is not depending on any specific plugins or prerequirements.
