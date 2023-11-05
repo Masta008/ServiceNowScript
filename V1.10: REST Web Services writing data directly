@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 Scripted Web Services insert/update/delete data directly
 
 //ServiceNow Field: "Resolution Details"
