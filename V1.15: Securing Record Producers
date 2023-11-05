@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 If appropriate roles are not assigned to record producers then, an unauthorized users can access it by directly navigating to the URL and thereby revealing unnecessary and sensitive information.
 
 //ServiceNow Field: "Resolution Details"
