@@ -1,0 +1,61 @@
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+	
+
+})(finding, current);
+Create a Javascript solution
+
+ChatGPT
+
+2 / 2
+
+It looks like you're trying to create a ServiceNow business rule script in JavaScript to handle access control for client callable script includes. The given script checks if a corresponding ACL (Access Control List) for a client callable script include exists and increments a finding if it does not. However, the script seems to be missing some key components, and it's not clear how you intend to use it. Here's an enhanced version of the script with explanations for each part:
+
+javascript
+Copy code
+(function (finding, current) {
+
+    // Create a GlideRecord query to check if ACL exists for client callable script include
+    var grACL = new GlideRecord('sys_security_acl');
+    grACL.addQuery('type', 'client_callable_script_include');
+    grACL.addQuery('name', current.name);
+    grACL.query();
+
+    // If no matching ACL found, create a finding and increment the count
+    if (!grACL.next()) {
+        var newFinding = new GlideRecord('your_finding_table'); // Replace 'your_finding_table' with the actual table name for findings
+        newFinding.initialize(); // Initialize a new record
+        newFinding.setValue('description', 'ACL missing for client callable script include: ' + current.name);
+        newFinding.insert(); // Insert the new finding record
+
+        finding.setCurrentSource(current); // Set the current record as the source of the finding
+        finding.increment(); // Increment the finding count
+    }
+
+})(finding, current);
+Please note the following points:
+
+GlideRecord Queries: The script uses GlideRecord to query the sys_security_acl table based on the type and name of the client callable script include.
+
+Finding Creation: If no matching ACL is found, a new finding record is created in the specified finding table. You need to replace 'your_finding_table' with the actual table name where you want to store findings.
+
+Incrementing Findings: The finding.increment() function is used to increment the finding count.
+
+Input Parameters: The function takes two parameters, finding and current, which are assumed to be provided when the function is called. finding is expected to be a GlideRecord object representing the finding record, and current represents the current record being processed.
+
+Make sure to replace 'your_finding_table' with the actual table name, and ensure that the function is called in the appropriate context with the correct parameters (finding and current). Additionally, ensure that you have the necessary permissions to access and modify the specified tables and records.
