@@ -1,0 +1,62 @@
+please program a javascript script solution from the following servicenow request:  "Description"
+When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+
+"Resolution Details"
+UI Pages making call to server side code should have ACL's implemented.
+
+"Script"
+(function (finding, current) {
+	
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','ui_page');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+
+})(finding, current);
+
+ChatGPT
+The provided script is a UI Page client script in ServiceNow that checks whether there is an ACL (Access Control List) defined for a UI Page. If there is no ACL, it increments a "finding" variable, suggesting that an ACL should be implemented for the UI Page.
+
+To address this security issue and implement ACL for the UI Page, you can follow these steps:
+
+Log in to your ServiceNow instance as an administrator or with appropriate permissions.
+
+Create an Access Control List (ACL) record for the UI Page. You should specify the type as "ui_page" and the name of the UI Page in the ACL record.
+
+Edit the provided script to include ACL checks for specific roles if needed. For example, you can add a condition to ensure that only users with specific roles (e.g., 'user_admin') can access the UI Page. Modify the script as follows:
+
+javascript
+Copy code
+(function (finding, current) {
+    var gr_acl = new GlideRecord('sys_security_acl');
+    gr_acl.addQuery('type', 'ui_page');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    gr_acl.query();
+    
+    if (!gr_acl.next()) {
+        // If there is no ACL, create one for the UI Page
+        var newACL = new GlideRecord('sys_security_acl');
+        newACL.initialize();
+        newACL.type = 'ui_page';
+        newACL.name = current.name;
+        newACL.insert();
+        
+        // You can add role-based checks here (e.g., restrict access to 'user_admin' role)
+        if (!gs.hasRole('user_admin')) {
+            // Increment the finding if the user doesn't have the 'user_admin' role
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
+    }
+})(finding, current);
+In this modified script, an ACL record will be created if it doesn't exist for the UI Page. Additionally, it checks if the current user has the 'user_admin' role. If not, it increments the finding.
+
+Attach the updated client script to the UI Page for which you want to enforce the ACL. You can do this by navigating to the UI Page record and adding the script to the "Client Script" field.
+
+Test the UI Page to ensure that it behaves as expected. Users without the 'user_admin' role should not be able to access the page.
+
+Please note that this script assumes that the 'user_admin' role should have access, and other roles should not. You can modify the role-based checks as needed to match your specific requirements. Additionally, make sure to thoroughly test the behavior in a non-production environment to ensure that it meets your security needs.
