@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//please program a javascript script solution for the following servicenow request:
+//Please program a JavaScript script solution for the following ServiceNow request:
 //ServiceNow Field: "Description"
 If appropriate roles are not assigned to record producers then, an unauthorized users can access it by directly navigating to the URL and thereby revealing unnecessary and sensitive information.
 
