@@ -1,0 +1,60 @@
+program a javascript solution: 
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//Answer
+It looks like you want to create a JavaScript solution for implementing access control for certain fields in ServiceNow using ACLs. Below is a JavaScript code snippet that demonstrates how you can achieve this:
+
+// ServiceNow Field: "Description"
+// Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it. All client callable script includes should be secured with required roles.
+
+// ServiceNow Field: "Resolution Details"
+// Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on the console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+// ServiceNow Field "Script"
+(function (finding, current) {
+    // Check if the user has the necessary roles to access the script include.
+    var requiredRoles = ['snc_internal']; // Add more roles as needed.
+    var userRoles = gs.getUser().getRoles();
+    
+    var canAccessScriptInclude = false;
+    for (var i = 0; i < requiredRoles.length; i++) {
+        if (userRoles.indexOf(requiredRoles[i]) !== -1) {
+            canAccessScriptInclude = true;
+            break;
+        }
+    }
+    
+    if (canAccessScriptInclude) {
+        var gr_acl = new GlideRecord('sys_security_acl');
+        gr_acl.addQuery('type', 'client_callable_script_include');
+        gr_acl.addQuery('name', 'CONTAINS', current.name);
+        gr_acl.query();
+        
+        if (!gr_acl.next()) {
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
+    } else {
+        // User does not have the required roles to access the script include.
+        gs.addErrorMessage("You do not have the required roles to access this script include.");
+    }
+})(finding, current);
+In this code:
+
+We define the requiredRoles array, which contains the roles that are required to access the script include. You can add more roles as needed.
+
+We get the user's roles using gs.getUser().getRoles() and check if the user has any of the required roles to access the script include.
+
+If the user has the necessary roles, we proceed to check the ACL and increment the finding as necessary.
+
+If the user does not have the required roles, we display an error message using gs.addErrorMessage() to inform the user that they cannot access the script include.
+
+Please adjust the requiredRoles array with the roles that are required to access the script include according to your specific requirements.
+
+
+
+
