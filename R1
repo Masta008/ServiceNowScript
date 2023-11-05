@@ -1,0 +1,35 @@
+//ServiceNow Field: "Description"
+All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
+
+//ServiceNow Field: "Resolution Details"
+All Processors of type - SCRIPT must be protected with CSRF Token. This Option is to protect the processor from running unless the instance uses a CSRF token.
+
+//ServiceNow Field "Script"
+please write a javascript solution
+
+//Answer 
+It seems like you want to implement a JavaScript solution to enforce CSRF token protection for processors of type "SCRIPT" in the ServiceNow platform. To achieve this, you can use JavaScript to check for the CSRF token and ensure that it is present before allowing the script to run. Here's a basic example of how you can do this:
+
+// Get the current user's CSRF token
+var csrfToken = g_csrf_token;
+
+// Check if the processor is of type SCRIPT
+if (current.processor_type == 'SCRIPT') {
+    // Check if the CSRF token is present
+    if (csrfToken) {
+        // CSRF token is present, it's safe to execute the script
+        // Your script logic goes here
+    } else {
+        // CSRF token is missing, do not execute the script
+        gs.addErrorMessage('CSRF token missing. Script execution is not allowed.');
+    }
+}
+In this code:
+
+We first retrieve the current user's CSRF token using the g_csrf_token global variable.
+
+We check if the processor's type is "SCRIPT" (you may need to adapt this condition based on your actual data model).
+
+If the processor is of type "SCRIPT," we check if the CSRF token is present. If it is, the script logic is executed. If the CSRF token is missing, we add an error message to indicate that script execution is not allowed.
+
+You can incorporate this code into your ServiceNow scripts where you need to ensure CSRF protection for "SCRIPT" processors. Please make sure to customize this code according to your specific ServiceNow implementation, as field names and conditions may vary.
