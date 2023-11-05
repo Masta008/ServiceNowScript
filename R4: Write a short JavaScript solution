@@ -5,7 +5,7 @@ Rules for access control lists (ACLs) restrict access to data by requiring users
 //ServiceNow Field: "Resolution Details"
 Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
-//Write a short javascript solution
+//Write a short avascript solution
 
 //Answer ChatGPT
 It appears that you want to enforce access control rules for a ServiceNow script include using a client callable script include. The code you've provided is a script that checks whether an access control list (ACL) exists for the client callable script include and increments a "finding" if it doesn't. If the "finding" count increases, it suggests that an ACL needs to be created for the script include.
