@@ -1,0 +1,51 @@
+program a javascript script: //ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+})(finding, current);
+
+ChatGPT
+The JavaScript script you provided appears to be related to ServiceNow and is used to check access control lists (ACLs) for a specific field. Below is a breakdown of the script:
+
+javascript
+Copy code
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with a minimum snc_internal role can access an unprotected CCSI by default. An attacker can run a GlideAjax on the console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script includes. Create an ACL around the script include with the Type as "client_callable_script_include" and define the required roles.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+    // Create a new GlideRecord to query the sys_security_acl table.
+    var gr_acl = new GlideRecord('sys_security_acl');
+    gr_acl.addQuery('type', 'client_callable_script_include');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    gr_acl.query();
+    
+    // Check if there is a matching record in the sys_security_acl table.
+    if (!gr_acl.next()) {
+        // If no matching record is found, update the 'finding' record and increment it.
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+})(finding, current);
+This script appears to be a part of a ServiceNow business rule or script that checks whether a specific record (referred to as 'current') meets certain security criteria related to access control lists (ACLs). It looks for a specific type of ACL called "client_callable_script_include" and checks if the 'name' field of the ACL record contains the name from the 'current' record. If no matching ACL record is found, it updates the 'finding' record and increments it.
+
+Please note that the script relies on ServiceNow's GlideRecord API, and it is essential to ensure that it is correctly integrated into your ServiceNow instance and associated with the appropriate table and business rule. Additionally, make sure to handle errors and exceptions as needed in a real-world scenario.
+
+
+
+
