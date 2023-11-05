@@ -1,0 +1,48 @@
+//ServiceNow Field: "Description"
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+
+//ServiceNow Field: "Resolution Details"
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+
+//ServiceNow Field "Script"
+(function (finding, current) {
+
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+	
+
+})(finding, current);
+Write a Javascript solution and get it to the point
+
+ChatGPT
+The provided JavaScript code appears to be related to ServiceNow ACLs and ensuring that client callable script includes are properly secured with required roles. However, it's not clear what you want to achieve with this code. If you could clarify your specific goal or issue, I can help you tailor the code accordingly.
+
+Nevertheless, based on the provided code, it seems like you want to check if an ACL with the type "client_callable_script_include" exists for the given script include and take some action if it doesn't. Here's a simplified and commented version of the code:
+
+javascript
+Copy code
+(function (finding, current) {
+    // Create a GlideRecord to query sys_security_acl records
+    var gr_acl = new GlideRecord('sys_security_acl');
+    
+    // Add filters to the query
+    gr_acl.addQuery('type', 'client_callable_script_include');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    
+    // Execute the query
+    gr_acl.query();
+
+    // Check if no matching ACL record was found
+    if (!gr_acl.next()) {
+        // Perform some action (e.g., incrementing a counter)
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+})(finding, current);
+This code checks for the existence of a sys_security_acl record with the specified type and name containing the value of current.name. If such a record is not found, it takes the action of setting the current source and incrementing a counter (finding). Please provide more context or specify what you'd like to achieve if you have further questions or requirements.
