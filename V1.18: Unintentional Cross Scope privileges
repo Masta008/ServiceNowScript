@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 Having many Cross Privileges in a custom application, might be an indication that during development these Cross Scope privileges were added unintentionally.
 
 //ServiceNow Field: "Resolution Details"
