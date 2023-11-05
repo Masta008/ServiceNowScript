@@ -14,8 +14,6 @@ Create a new Script Include, for example, named "CustomUIAccessControl."
 
 In the "CustomUIAccessControl" Script Include, you can add the following code:
 
-javascript
-Copy code
 var CustomUIAccessControl = Class.create();
 CustomUIAccessControl.prototype = {
   initialize: function() {},
