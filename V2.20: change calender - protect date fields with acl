@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//please program a javascript script solution for the following servicenow request:
+//Please program a JavaScript script solution for the following ServiceNow request:
 //ServiceNow Field: "Description"
 Planned Start and End date of change records are very sensitive and should be protected.  UI Policies applied to the date fields on the form are not effecitve because users can still update it for example in list view.
 
