@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-//please program a javascript script solution for the following servicenow request:
+//Please program a JavaScript script solution for the following ServiceNow request:
 //ServiceNow Field: "Description"
 Checks to see if the UI Action can be accessed by a user with no roles who does not have read access to the table.
 
