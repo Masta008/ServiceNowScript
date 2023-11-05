@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 Number of Active Scheduled Reports.  Scheduled reports export data which is no longer protected by ACLs and is no longer trackable.
 
 //ServiceNow Field: "Resolution Details"
