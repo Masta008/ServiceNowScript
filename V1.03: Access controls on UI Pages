@@ -3,7 +3,7 @@
 ++Communitation with ChatGPT++
 
 //User 
-/ServiceNow Field: "Description"
+//ServiceNow Field: "Description"
 When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
 
 //ServiceNow Field: "Resolution Details"
