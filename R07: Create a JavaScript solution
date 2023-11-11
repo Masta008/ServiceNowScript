@@ -1,10 +1,7 @@
-//ServiceNow Field: "Description"
+Create a Javascript solution
 Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-//ServiceNow Field: "Resolution Details"
 Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
-
-//ServiceNow Field "Script"
 (function (finding, current) {
 
     var gr_acl = new GlideRecord('sys_security_acl');
@@ -18,12 +15,9 @@ Any logged-in users with minimum snc_internal can access an unprotected CCSI by 
 	
 
 })(finding, current);
-Create a Javascript solution
+
 
 ChatGPT
-
-2 / 2
-
 It looks like you're trying to create a ServiceNow business rule script in JavaScript to handle access control for client callable script includes. The given script checks if a corresponding ACL (Access Control List) for a client callable script include exists and increments a finding if it does not. However, the script seems to be missing some key components, and it's not clear how you intend to use it. Here's an enhanced version of the script with explanations for each part:
 
 javascript
