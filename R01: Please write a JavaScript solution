@@ -1,32 +1,66 @@
-Please write a JavaScript solution
-All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
+Please write a JavaScript solution: 
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-All Processors of type - SCRIPT must be protected with CSRF Token. This Option is to protect the processor from running unless the instance uses a CSRF token.
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
+(function (finding, current) {
+
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+	
+
+})(finding, current);
 
 ChatGPT
-It seems like you want to implement a JavaScript solution to enforce CSRF token protection for processors of type "SCRIPT" in the ServiceNow platform. To achieve this, you can use JavaScript to check for the CSRF token and ensure that it is present before allowing the script to run. Here's a basic example of how you can do this:
+To create an ACL (Access Control List) around a client callable script include in ServiceNow with the specified requirements, you can follow these steps:
 
-// Get the current user's CSRF token
-var csrfToken = g_csrf_token;
+Open the Script Include you want to protect.
 
-// Check if the processor is of type SCRIPT
-if (current.processor_type == 'SCRIPT') {
-    // Check if the CSRF token is present
-    if (csrfToken) {
-        // CSRF token is present, it's safe to execute the script
-        // Your script logic goes here
-    } else {
-        // CSRF token is missing, do not execute the script
-        gs.addErrorMessage('CSRF token missing. Script execution is not allowed.');
-    }
+Add the following code at the beginning of your Script Include:
+
+javascript
+Copy code
+// Check if the current user has the required roles to access the script include
+if (!gs.hasRole('snc_internal')) {
+    // Additional role checks can be added here if needed
+    gs.log('Access denied. User does not have the required roles.');
+    // You can throw an exception or handle the access denial in a way that suits your application
+    return;
 }
-In this code:
+This code checks if the current user has the 'snc_internal' role. If not, access is denied.
 
-We first retrieve the current user's CSRF token using the g_csrf_token global variable.
+Now, you can update your ACL script to include this role-based access check. Here's an example:
+javascript
+Copy code
+(function (finding, current) {
 
-We check if the processor's type is "SCRIPT" (you may need to adapt this condition based on your actual data model).
+    // Check if the current user has the required roles to access the script include
+    if (!gs.hasRole('snc_internal')) {
+        // Additional role checks can be added here if needed
+        gs.log('Access denied. User does not have the required roles.');
+        // Set the finding information accordingly
+        finding.setCurrentSource(current);
+        finding.increment();
+        return;
+    }
 
-If the processor is of type "SCRIPT," we check if the CSRF token is present. If it is, the script logic is executed. If the CSRF token is missing, we add an error message to indicate that script execution is not allowed.
+    // Continue with your existing ACL logic
 
-You can incorporate this code into your ServiceNow scripts where you need to ensure CSRF protection for "SCRIPT" processors. Please make sure to customize this code according to your specific ServiceNow implementation, as field names and conditions may vary.
+    var gr_acl = new GlideRecord('sys_security_acl');
+    gr_acl.addQuery('type', 'client_callable_script_include');
+    gr_acl.addQuery('name', 'CONTAINS', current.name);
+    gr_acl.query();
+
+    if (!gr_acl.next()) {
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+
+})(finding, current);
+This code ensures that only users with the 'snc_internal' role can access the script include. If a user without the role tries to access it, the ACL will deny access and increment the finding accordingly. You can customize this further based on your specific requirements.
