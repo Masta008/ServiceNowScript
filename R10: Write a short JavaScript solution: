@@ -1,38 +1,50 @@
 Write a short JavaScript solution: 
-//ServiceNow Field: "Description"
 Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-//ServiceNow Field: "Resolution Details"
 Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
+(function (finding, current) {
+
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
+	
+
+})(finding, current);
+
 ChatGPT
-The provided JavaScript code appears to be related to ServiceNow and is used to check if there is a GlideRecord object associated with a specific client callable script include in ServiceNow. It looks for the existence of an ACL for a script include and increments a "finding" if the ACL does not exist. Here's a brief explanation of the code:
+Your provided JavaScript code seems to be a part of a Business Rule or a Script Include that's designed to enforce Access Control Lists (ACLs) for client callable script includes. The script checks if there is a sys_security_acl record of type "client_callable_script_include" associated with the current script include, and if not, it increments a finding counter.
+
+Here's a small modification to include the definition of required roles:
 
 javascript
 Copy code
 (function (finding, current) {
-    // Create a GlideRecord object for the 'sys_security_acl' table.
-    var gr_acl = new GlideRecord('sys_security_acl');
-    
-    // Add queries to filter ACL records.
-    gr_acl.addQuery('type', 'client_callable_script_include');
-    gr_acl.addQuery('name', 'CONTAINS', current.name);
-    
-    // Execute the query.
-    gr_acl.query();
 
-    // If no ACL record is found, increment the 'finding' variable.
-    if (!gr_acl.next()) {
-        finding.setCurrentSource(current);
-        finding.increment();
+    // Define the required roles for access control
+    var requiredRoles = ['snc_internal'];
+
+    // Check if the user has the required roles
+    if (gs.hasRole(requiredRoles)) {
+        // If the user has the required roles, check for ACL
+        var gr_acl = new GlideRecord('sys_security_acl');
+        gr_acl.addQuery('type', 'client_callable_script_include');
+        gr_acl.addQuery('name', 'CONTAINS', current.name);
+        gr_acl.query();
+
+        if (!gr_acl.next()) {
+            // If no ACL is found, increment the finding counter
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
     }
+
 })(finding, current);
-This code takes two parameters, "finding" and "current," which are expected to be objects from a ServiceNow context. It searches for a security ACL with the type "client_callable_script_include" that contains the name of the current script include. If no ACL record is found, it increments the "finding" variable.
+In this modification, requiredRoles is an array that contains the roles required for access. The gs.hasRole(requiredRoles) checks if the current user has the necessary roles before proceeding to check the ACL.
 
-It's important to note that this code should be executed in the context of a ServiceNow business rule, script include, or some other server-side script context within ServiceNow. The purpose of this code appears to be enforcing access control by checking if a specific client callable script include has an associated ACL, and if not, incrementing a "finding" counter.
-
-Make sure to include this code in the appropriate context within your ServiceNow instance and ensure that it aligns with your access control and security policies.
-
-
-
-
+Note: It's important to validate and adapt this code according to your specific use case and system requirements. Also, ensure that you have proper error handling and logging in your production code.
