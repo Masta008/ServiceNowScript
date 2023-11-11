@@ -1,42 +1,72 @@
-//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
 
-++Communitation with ChatGPT++
+It looks like the provided script is intended to check whether a UI Action can be accessed by a user with no roles and no read access to the table. The script is checking the presence of conditions and roles related to the UI Action.
 
-//User 
-//Please program a JavaScript script solution for the following ServiceNow request:
-//ServiceNow Field: "Description"
-Checks to see if the UI Action can be accessed by a user with no roles who does not have read access to the table.
+Here's a breakdown of the script:
 
-//ServiceNow Field: "Resolution Details"
-Use conditions or visibility criteria to restrict access to UI Actions.
+It initializes a variable found to true.
+It queries the "sys_ui_action_view" table to check if there are any records related to the current UI Action (current.sys_id). If a record is found, it sets found to false.
+It checks if the UI Action has a condition, and if that condition includes "gs.hasRole," it sets found to false.
+It queries the "sys_ui_action_role" table to check if there are any records related to the current UI Action. If a record is found, it sets found to false.
+If found is still true after these checks, it increments a finding and sets the current source.
+Now, to address the request from ServiceNow to check if the UI Action can be accessed by a user with no roles who does not have read access to the table, you might want to consider the following:
 
-//Answer
-To restrict access to a UI Action in ServiceNow for users with no roles who do not have read access to the table, you can use client-side scripting. Here's a JavaScript script that you can use to achieve this:
+Check Read Access:
+Add a check to see if the user has read access to the table associated with the UI Action. You can use the GlideRecord.canRead() method for this.
 
-(function () {
-  // Check if the user has any roles
-  var userHasRoles = g_user.hasRoles();
-  
-  // Check if the user has read access to the table
-  var userHasReadAccess = g_user.hasReadAccess('YOUR_TABLE_NAME'); // Replace 'YOUR_TABLE_NAME' with the actual table name
-  
-  // Get the UI Action element (replace 'sysverb_your_ui_action_name' with the actual UI Action sys_id)
-  var uiAction = g_form.getActionByName('sysverb_your_ui_action_name');
-  
-  if (!userHasRoles && !userHasReadAccess) {
-    // Disable the UI Action for users with no roles and no read access
-    uiAction.setVisible(false);
-  } else {
-    // Enable the UI Action for other users
-    uiAction.setVisible(true);
-  }
-})();
-In this script:
+Check User Roles:
+Instead of just checking for the existence of roles, you may want to check specifically for the absence of roles for users with no roles. You can use GlideRecord to query the "sys_user_role" table and check if the user has any roles.
 
-We first check if the user has any roles using g_user.hasRoles().
-We then check if the user has read access to the table by using g_user.hasReadAccess('YOUR_TABLE_NAME'). Make sure to replace 'YOUR_TABLE_NAME' with the actual name of the table you want to check read access for.
-We get the UI Action element using g_form.getActionByName('sysverb_your_ui_action_name'). Replace 'sysverb_your_ui_action_name' with the actual sys_id of your UI Action.
-Depending on the conditions, we either hide or show the UI Action using uiAction.setVisible(false) or uiAction.setVisible(true).
-You should add this script to the UI Action's "Client" script field. Make sure to replace 'YOUR_TABLE_NAME' and 'sysverb_your_ui_action_name' with the appropriate values for your use case.
+Review Conditions:
+Consider reviewing the conditions part. If you want to allow access to users with no roles and no read access, make sure the conditions do not unintentionally restrict such users.
 
-This script will hide the UI Action for users with no roles and no read access to the specified table, effectively restricting access as per your requirements.
+Here's an updated version of the script with these considerations:
+
+javascript
+Copy code
+(function(finding, current) {
+
+    var found = true;
+
+    // Check if there are any records related to the current UI Action in sys_ui_action_view
+    var gr = new GlideRecord("sys_ui_action_view");
+    gr.addQuery('sys_ui_action', current.sys_id);
+    gr.query();
+    if (gr.next()) {
+        found = false;
+    }
+
+    // Check if the UI Action has a condition that includes "gs.hasRole"
+    if (JSUtil.notNil(current.condition) && current.condition.includes("gs.hasRole")) {
+        found = false;
+    }
+
+    // Check if there are any records related to the current UI Action in sys_ui_action_role
+    var gr2 = new GlideRecord('sys_ui_action_role');
+    gr2.addQuery('sys_ui_action', current.sys_id);
+    gr2.query();
+    if (gr2.next()) {
+        found = false;
+    }
+
+    // Check if the user has read access to the table associated with the UI Action
+    var table = current.sys_table;
+    if (!gs.hasRole("admin") && !gs.getSession().canRead(table)) {
+        found = false;
+    }
+
+    // Check if the user has any roles
+    var userRoles = new GlideRecord('sys_user_role');
+    userRoles.addQuery('user', gs.getUserID());
+    userRoles.query();
+    if (userRoles.next()) {
+        found = false;
+    }
+
+    // If 'found' is still true after these checks, increment finding and set the current source
+    if (found) {
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+
+})(finding, current);
+This script now includes additional checks for read access to the table and the absence of roles for the user. Please adapt it further based on your specific requirements and the structure of your ServiceNow instance.
