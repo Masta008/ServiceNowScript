@@ -1,38 +1,60 @@
-Program a javascript script: //ServiceNow Field: "Description"
-When there is no ACL for an UI Page, by default the UI Page can be accessed by all the logged-in internal users. If there is no, script level authorization checks like gs.hasRole('user_admin'), then any logged in user can access this UI Page and change anybody's password by passing the user sys_id and the new password.
+Program a javascript script:
+Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-//ServiceNow Field: "Resolution Details"
-UI Pages making call to server side code should have ACL's implemented.
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
-//ServiceNow Field "Script"
 (function (finding, current) {
-	
+
     var gr_acl = new GlideRecord('sys_security_acl');
-		gr_acl.addQuery('type','ui_page');
+		gr_acl.addQuery('type','client_callable_script_include');
 		gr_acl.addQuery('name','CONTAINS',current.name);
 		gr_acl.query();
 		if(!gr_acl.next()){
 			finding.setCurrentSource(current);
 			finding.increment();
 		}
+	
 
 })(finding, current);
 
 ChatGPT
-The provided JavaScript script is intended to identify ServiceNow UI Pages that do not have ACLs (Access Control Lists) implemented, specifically, UI Pages that are missing ACLs with the type 'ui_page' and whose name contains the current UI Page's name.
+Your provided script is a business rule in ServiceNow that seems to be checking for the existence of an ACL (Access Control List) associated with a client callable script include. The goal is to ensure that there is an ACL defined for client callable script includes, and if not, increment a finding.
 
-Here's an explanation of the script:
+To create an ACL around the script include with a type of "client_callable_script_include" and define required roles, you can use the following code:
 
-It takes two parameters: finding and current. These parameters are likely used within a background script or business rule in ServiceNow.
+javascript
+Copy code
+(function (finding, current) {
 
-It initializes a GlideRecord gr_acl to query the sys_security_acl table. This table stores ACL records, and the script will query it to find ACLs related to UI Pages.
+    // Define the name of the script include
+    var scriptIncludeName = current.name;
 
-It adds queries to the gr_acl GlideRecord to filter ACLs based on their type (ui_page) and name (contains the current UI Page's name).
+    // Query the sys_security_acl table for the ACL
+    var aclGr = new GlideRecord('sys_security_acl');
+    aclGr.addQuery('type', 'client_callable_script_include');
+    aclGr.addQuery('name', scriptIncludeName);
+    aclGr.query();
 
-It performs the query by calling gr_acl.query().
+    // Check if the ACL exists
+    if (!aclGr.next()) {
+        // ACL does not exist, create a new ACL
+        var newAcl = new GlideRecord('sys_security_acl');
+        newAcl.initialize();
+        newAcl.type = 'client_callable_script_include';
+        newAcl.name = scriptIncludeName;
+        
+        // Add the required roles to the ACL
+        newAcl.setValue('operations', 'read,execute'); // Add more operations if needed
+        newAcl.setValue('roles', 'snc_internal,role2,role3'); // Add the required roles
 
-If no matching ACL records are found (meaning no ACLs are defined for the current UI Page), it sets the current finding source to the current record (which is the UI Page in question) and increments a counter, possibly indicating that this UI Page is missing an ACL.
+        // Insert the new ACL
+        var aclSysId = newAcl.insert();
 
-However, it's important to note that this script is for identifying UI Pages without ACLs. If you want to enforce security by creating the appropriate ACLs, you would need to develop another script or manually create the necessary ACLs for each UI Page. This script only identifies the UI Pages without ACLs, and it does not create or assign ACLs.
+        // Log the finding
+        finding.setCurrentSource(current);
+        finding.increment();
+        finding.setValue('message', 'ACL created for client callable script include: ' + scriptIncludeName + ', ACL Sys ID: ' + aclSysId);
+    }
 
-Also, please ensure that the script is appropriately configured and integrated into your ServiceNow instance, and test it in a non-production environment to ensure it meets your specific requirements.
+})(finding, current);
+Make sure to customize the roles and operations according to your requirements. The script checks if there is an ACL for the given client callable script include, and if not, it creates a new ACL with the specified roles and operations. It then logs a finding indicating that an ACL has been created. Adjust the script as needed for your specific use case.
