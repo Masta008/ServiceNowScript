@@ -1,4 +1,9 @@
+How can a developer resolve the following request from ServiceNow? 
+All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
+All Processors of type - SCRIPT must be protected with CSRF Token. This Option is to protect the processor from running unless the instance uses a CSRF token.
+
+ChatGPT
 The request you've received is asking for a security measure to be implemented for all processors of type "SCRIPT" in ServiceNow. Cross-Site Request Forgery (CSRF) protection is a common security practice to prevent unauthorized execution of certain actions.
 
 Here's a general guide on how a developer might go about implementing this in a ServiceNow environment:
