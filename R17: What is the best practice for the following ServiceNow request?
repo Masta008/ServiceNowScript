@@ -1,62 +1,46 @@
-What is the best practice for the following Servicenow request? Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
+What is the best practice for the following Servicenow request? Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
+Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
 (function (finding, current) {
-	
-    var g_acl = new GlideRecord('sys_security_acl');
-		g_acl.addQuery('name','CONTAINS',current.name);
-		g_acl.query();
-		if(!g_acl.next()){
+
+    var gr_acl = new GlideRecord('sys_security_acl');
+		gr_acl.addQuery('type','client_callable_script_include');
+		gr_acl.addQuery('name','CONTAINS',current.name);
+		gr_acl.query();
+		if(!gr_acl.next()){
 			finding.setCurrentSource(current);
 			finding.increment();
 		}
+	
 
 })(finding, current);
 
-//Answer
-
-
 ChatGPT
-The script you provided appears to be a Business Rule in ServiceNow, specifically designed to check if there is an Access Control List (ACL) for a particular table. It seems to be ensuring that all tables have ACLs by checking if an ACL with a specific name (possibly related to the current table name) exists. If not, it increments a counter on a 'finding' record.
+It looks like you are trying to create an Access Control List (ACL) in ServiceNow to secure client callable script includes. Your code snippet seems to be a script include that checks whether there is an ACL defined for the client callable script include, and if not, it increments a finding.
 
-However, it's important to note that creating ACLs for all tables alone may not be sufficient for securing your data appropriately. The ACLs need to be configured with the right permissions and conditions to ensure that only the necessary audience has access to the data.
+Here are some best practices and suggestions:
 
-Here are some best practices and improvements for the script:
+Use Script Includes Wisely:
+Ensure that your script includes only contain functions that should be exposed to clients. Avoid including sensitive logic or data in these script includes.
 
-Check Permissions: Instead of just checking if an ACL exists, you should also check whether the ACL has the correct permissions set. For example, you might want to make sure that only certain roles have read, write, create, or delete access.
+Secure Script Includes with Roles:
+You are correct in wanting to secure client callable script includes with required roles. Ensure that only users with the necessary roles can execute these functions. Define the required roles in the ACL.
 
-Define Specific Conditions: ACLs often include conditions to specify when they apply. Ensure that the conditions are set appropriately for your use case. For example, you might want to restrict access based on the user's role, group, or other criteria.
-
-Logging and Notifications: Implement logging or notifications to alert administrators when an ACL is missing or improperly configured. This can help in quickly identifying and resolving security issues.
-
-Documentation: Maintain documentation that describes the purpose and configuration details of each ACL. This is essential for future reference and audits.
-
-Regular Audits: Periodically audit and review ACL configurations to ensure they are still relevant and aligned with your security policies.
-
-Here's an improved version of your script with some of these considerations:
+Improve ACL Query:
+The ACL query in your script checks if there is any ACL for the given script include. The query could be improved by checking if there is an ACL with the exact name and type. The current query uses the 'CONTAINS' operator, which may lead to unintended matches.
 
 javascript
 Copy code
-(function (finding, current) {
-    var tableName = current.name;
+gr_acl.addQuery('type', 'client_callable_script_include');
+gr_acl.addQuery('name', current.name);
+Audit Trail:
+Consider adding an audit trail or logging mechanism to record when the ACL is checked and if the check failed. This can be valuable for monitoring and security analysis.
 
-    var acl = new GlideRecord('sys_security_acl');
-    acl.addQuery('name', tableName);
-    acl.query();
+Testing:
+Thoroughly test the ACL and script include in a non-production environment before deploying them to production. Ensure that the ACL works as expected and that only authorized users can execute the client callable script includes.
 
-    if (!acl.next()) {
-        // ACL not found, create a finding record or log a message
-        gs.error('ACL not found for table: ' + tableName);
-        finding.setCurrentSource(current);
-        finding.increment();
-    } else {
-        // ACL found, check if it has the correct permissions and conditions
-        if (acl.canRead() && acl.canWrite() && acl.canCreate() && acl.canDelete()) {
-            gs.info('ACL configured correctly for table: ' + tableName);
-        } else {
-            gs.error('ACL permissions not set correctly for table: ' + tableName);
-        }
-    }
-})(finding, current);
-Remember to customize this script based on your specific requirements and security policies.
+Stay Informed:
+Keep yourself informed about ServiceNow updates and security best practices. Regularly review and update your security measures as needed.
+
+Remember that security is an ongoing process, and it's important to regularly review and update your security measures to adapt to changing requirements and potential threats.
