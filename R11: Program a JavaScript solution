@@ -66,3 +66,8 @@ Copy code
 
 })(finding, current);
 This script checks if an ACL already exists for the given client callable script include. If not, it creates a new ACL and associates it with the script include. Additionally, it assigns the required roles (e.g., 'snc_internal') to the ACL. Adjust the script as needed for your specific requirements.
+
+
+
+
+
