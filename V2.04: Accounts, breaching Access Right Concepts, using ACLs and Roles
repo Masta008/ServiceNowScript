@@ -1,4 +1,5 @@
-How can a developer resolve the following request from ServiceNow? Insider Threat.
+How can a developer resolve the following request from ServiceNow?
+Insider Threat.
 Is there any account with Roles assigned and related ACLs configured to enable prohibited data manipulation like deleting records or changing. In order to protect against insiders with elevated or privileged access, access lists and roles should be monitored especially for deletion, the role assignment should be thoroughly reviewed to prevent unlogged/undocumented accounts with extra rights. This is valid throughout the whole platform and is not depending on any specific plugins or prerequirements.
 
 All accounts having privileged access, including admin or security_admin, should be examined thoroughly to make sure that such an access level is required. If the access has been granted for a special purpose or for a specific task, the access should be revoked after the task is done or the time period is over. All the accounts having a role with Elevated privilege set to true, including security_admin and admin, should be verified and discussed. This definition will identify those accounts as findings. 
