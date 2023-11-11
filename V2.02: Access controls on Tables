@@ -1,9 +1,8 @@
-How can a developer resolve the following request from ServiceNow?  Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
+How can a developer resolve the following request from ServiceNow?
+Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
-//ServiceNow Field: "Resolution Details"
 Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
 
-//ServiceNow Field "Script"
 (function (finding, current) {
 	
     var g_acl = new GlideRecord('sys_security_acl');
