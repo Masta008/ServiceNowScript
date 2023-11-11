@@ -1,12 +1,10 @@
-//ServiceNow Field: "Description"
+Please write a JavaScript solution
 All Processors of type - SCRIPT must be protected with CSRF Token. CSRF Option should be checked for all Active Processors. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
-//ServiceNow Field: "Resolution Details"
 All Processors of type - SCRIPT must be protected with CSRF Token. This Option is to protect the processor from running unless the instance uses a CSRF token.
 
-//Please write a JavaScript solution
 
-//Answer 
+ChatGPT
 It seems like you want to implement a JavaScript solution to enforce CSRF token protection for processors of type "SCRIPT" in the ServiceNow platform. To achieve this, you can use JavaScript to check for the CSRF token and ensure that it is present before allowing the script to run. Here's a basic example of how you can do this:
 
 // Get the current user's CSRF token
