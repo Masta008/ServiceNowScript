@@ -1,58 +1,66 @@
-//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
-
-++Communitation with ChatGPT++
-
-//User 
-//Please program a JavaScript script solution for the following ServiceNow request:
-//ServiceNow Field: "Description"
+How can a developer resolve the following request from ServiceNow? 
 Having many Cross Privileges in a custom application, might be an indication that during development these Cross Scope privileges were added unintentionally.
 
-//ServiceNow Field: "Resolution Details"
 Recommendation is to investigate each Cross Scope privilege and identify whether this is really needed as part of the application. If not remove the privilege.
 Removing privileges might require regression testing to ensure that nothing will break. The extend of testing will depend on the Application size.
 
-//Answer
-To create a JavaScript script to identify and investigate Cross Scope privileges in ServiceNow, you can use the GlideAggregate class to query the 'sys_scope' table and 'sys_scope_has_role' table to gather information about the privileges. You can then display or log the results to help you make a decision about whether to remove them. Here's a sample script to get you started:
+(function(finding, current) {
 
-// Create a new GlideAggregate query on the 'sys_scope' table.
-var crossScopePrivileges = new GlideAggregate('sys_scope');
-crossScopePrivileges.addQuery('type', '!=', '3'); // Exclude Global scope
-crossScopePrivileges.addAggregate('COUNT', 'sys_scope_has_role.role');
-crossScopePrivileges.groupBy('name');
-crossScopePrivileges.query();
+    var threshold = 25; // number of cross scope 
+    // get number of cross scope privileges
+    var snGr = new GlideAggregate('sys_scope_privilege');
+    snGr.addQuery('sys_scope', current.sys_id.toString());
+    snGr.addAggregate('COUNT');
+    snGr.query(); // get all
+    if (snGr.next()) {
+        // compare against threshold
+        var count = snGr.getAggregate('COUNT');
+        if (count > threshold) {
+            // add finding
 
-// Loop through the cross scope privileges.
-while (crossScopePrivileges.next()) {
-  var scopeName = crossScopePrivileges.getValue('name');
-  var roleCount = parseInt(crossScopePrivileges.getAggregate('COUNT', 'sys_scope_has_role.role'));
-
-  gs.info('Cross Scope Privilege: ' + scopeName);
-  gs.info('Roles with access: ' + roleCount);
-
-  // You can add logic here to decide if this privilege should be removed or not.
-  // For example, you can check the 'roleCount' and the size of your application.
-
-  if (roleCount > 0) {
-    gs.info('This privilege is in use. Consider regression testing.');
-  } else {
-    // If you decide to remove the privilege, you can use the following code.
-    // Uncomment and use with caution!
-    /*
-    var scopeGR = new GlideRecord('sys_scope');
-    if (scopeGR.get('name', scopeName)) {
-      scopeGR.deleteRecord();
-      gs.info('Privilege ' + scopeName + ' has been removed.');
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
     }
-    */
-  }
+
+
+})(finding, current);
+
+ChatGPT
+The provided script appears to be a ServiceNow script written in JavaScript. It seems to be checking the number of cross-scope privileges associated with a specific custom application and raising a finding if the count exceeds a predefined threshold.
+
+To address the request to investigate and potentially remove unnecessary cross-scope privileges, you can follow these steps:
+
+Review Cross-Scope Privileges:
+
+Understand the purpose of each cross-scope privilege in your custom application.
+Verify whether each privilege is necessary for the functionality of the application.
+Modify the Script:
+
+If you identify privileges that are unnecessary, you can remove them directly from the script.
+
+javascript
+Copy code
+// Remove unnecessary cross-scope privileges
+var snGr = new GlideRecord('sys_scope_privilege');
+snGr.addQuery('sys_scope', current.sys_id.toString());
+snGr.query();
+while (snGr.next()) {
+    // Check conditions and remove unnecessary privileges
+    if (/* Your condition for unnecessary privilege */) {
+        snGr.deleteRecord();
+    }
 }
+Regression Testing:
 
-// Please be cautious when using the deletion code above.
-// It is commented out to prevent accidental removal of privileges.
-In this script:
+As mentioned in the request, removing privileges might impact the application's functionality. Perform thorough regression testing to ensure that removing privileges does not break any existing functionality.
+Adjust Threshold:
 
-We query the 'sys_scope' table to find all non-global (type 3) scopes, which are custom application scopes.
-We aggregate the number of roles that have access to each scope.
-We loop through the results, displaying the scope name and the number of roles with access.
-You can add your custom logic to decide whether to remove a privilege based on the 'roleCount' and the size of your application.
-Remember to be cautious when removing privileges, as this can have a significant impact on your application. Always perform thorough testing and consider the implications before removing any privileges.
+You may also want to consider adjusting the threshold value in the script based on your application's size and complexity. The threshold is currently set to 25, but you can adjust it to a value that makes sense for your specific situation.
+Documentation:
+
+Document the changes made to the cross-scope privileges and the reasons behind those changes. This documentation will be helpful for future reference and for other team members who might work on the application.
+Communication:
+
+If your application is part of a larger system or used by other teams, communicate the changes made to the cross-scope privileges to ensure everyone is aware of the modifications.
+Remember that modifying cross-scope privileges can have significant implications, so it's crucial to approach this process with caution and conduct thorough testing to avoid any negative impact on the application.
