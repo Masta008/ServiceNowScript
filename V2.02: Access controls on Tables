@@ -1,54 +1,53 @@
-//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
-
-++Communitation with ChatGPT++
-
-//User 
-//Please program a JavaScript script solution for the following ServiceNow request:
-//"Description"
+What is the best practice for the following Servicenow request?
 Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
-//"Resolution Details"
 Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
 
-//Answer
-To address the ServiceNow request you mentioned, you can create a JavaScript script that enforces Access Control Lists (ACLs) for tables in your ServiceNow instance. ACLs allow you to restrict access to data by defining rules that users must meet before they can interact with the data. Here's a script that can help you ensure that all tables have ACLs:
+(function (finding, current) {
+	
+    var g_acl = new GlideRecord('sys_security_acl');
+		g_acl.addQuery('name','CONTAINS',current.name);
+		g_acl.query();
+		if(!g_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
 
-(function () {
-  // Specify the table names for which you want to create ACLs
-  var tablesToSecure = [
-    "table_name_1",
-    "table_name_2",
-    // Add more table names as needed
-  ];
+})(finding, current);
 
-  // Define the ACL properties
-  var aclProperties = {
-    operation: "read", // You can customize this based on your requirements
-    role: "admin", // The role that has access
-    condition: "true", // You can customize the condition as needed
-    script: "", // You can add scripts for additional control
-  };
 
-  // Loop through the specified tables and create ACLs
-  tablesToSecure.forEach(function (tableName) {
-    var acl = new GlideACL();
-    acl.name = "Secure " + tableName + " Table"; // ACL name
-    acl.description = "ACL to secure access to the " + tableName + " table."; // ACL description
-    acl.active = true;
-    acl.applies_to = tableName;
-    acl.operation = aclProperties.operation;
-    acl.condition = aclProperties.condition;
-    acl.role = aclProperties.role;
-    acl.script = aclProperties.script;
+ChatGPT
+The script you've provided is a Business Rule script in ServiceNow, specifically for checking whether a particular table has an ACL (Access Control List) associated with it. ACLs in ServiceNow are used to control who can access records in a table and what operations (create, read, update, delete) they can perform.
 
-    // Save the ACL
-    var aclID = acl.insert();
-    gs.log("Created ACL for " + tableName + " with ID: " + aclID);
-  });
+The script checks if there is an ACL for the current table, and if not, it increments a finding. This is a good approach to enforce the presence of ACLs for tables, which is a best practice for securing data in ServiceNow.
 
-  // Log completion
-  gs.log("ACL creation script completed.");
-})();
-Make sure to replace "table_name_1", "table_name_2", and any other table names in the tablesToSecure array with the names of the tables you want to secure with ACLs. You can also customize the ACL properties (operation, role, condition, and script) as per your specific requirements.
+However, it's important to note that having an ACL alone doesn't ensure that access controls are properly configured. You also need to define the rules within the ACL to specify which roles or users can perform specific operations on records in the table.
 
-After creating the script, you can execute it within the ServiceNow environment. It will loop through the specified tables and create ACLs for each of them, ensuring that data access is restricted according to your defined rules
+Here's an example of how you can modify your script to check not just for the presence of ACLs but also ensure that the ACL has proper rules:
+
+javascript
+Copy code
+(function (finding, current) {
+    // Check if there is an ACL for the current table
+    var acl = new GlideRecord('sys_security_acl');
+    acl.addQuery('name', 'CONTAINS', current.name);
+    acl.query();
+
+    if (!acl.next()) {
+        // If no ACL is found, increment the finding
+        finding.setCurrentSource(current);
+        finding.increment();
+    } else {
+        // If ACL is found, check if it has proper rules
+        var aclRules = new GlideRecord('sys_security_acl_role');
+        aclRules.addQuery('acl', acl.sys_id);
+        aclRules.query();
+
+        if (!aclRules.next()) {
+            // If no rules found for the ACL, increment the finding
+            finding.setCurrentSource(current);
+            finding.increment();
+        }
+    }
+})(finding, current);
+This modification adds a check for the presence of rules in the ACL. If there are no rules defined for the ACL, it increments the finding. This ensures not only that an ACL exists but also that it has rules defining who can access the data and what operations they can perform.
