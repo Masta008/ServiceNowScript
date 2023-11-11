@@ -1,44 +1,49 @@
-//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
+What is the best practice for the following Servicenow request? 
+Tables should be secured with access controls, data in the table should be limited access to only necessary audience.
 
-++Communitation with ChatGPT++
+Make sure that all tables should have ACL's. Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it.
 
-//User 
-What is the solution for the following ServiceNow request? 
-//ServiceNow Field: "Description"
-Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
+(function (finding, current) {
+	
+    var g_acl = new GlideRecord('sys_security_acl');
+		g_acl.addQuery('name','CONTAINS',current.name);
+		g_acl.query();
+		if(!g_acl.next()){
+			finding.setCurrentSource(current);
+			finding.increment();
+		}
 
-//ServiceNow Field: "Resolution Details"
-Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
+})(finding, current);
 
-//Answer
-To address the ServiceNow request for creating an Access Control List (ACL) for a Client Callable Script Include (CCSI), you can use JavaScript to create the ACL. Below is a JavaScript script that you can use in your ServiceNow instance to define the required roles for accessing a Client Callable Script Include. Please note that this script should be run in a ServiceNow environment with administrative privileges:
 
-// Define the name of the Client Callable Script Include
-var scriptIncludeName = 'YourClientCallableScriptIncludeName';
+ChatGPT
+The script you provided is a ServiceNow business rule script written in the ServiceNow scripting language (JavaScript). This script seems to be checking if there is a security ACL (Access Control List) associated with a given table name and increments a finding if it doesn't find one.
 
-// Define the required roles for accessing the Client Callable Script Include
-var requiredRoles = ['snc_internal']; // You can add more roles as needed
+Your goal is to ensure that all tables have ACLs to secure access to the data appropriately. While the script you provided is a step in the right direction by checking for the existence of an ACL, it doesn't create an ACL if one doesn't exist. Here's an enhanced version of the script to create an ACL if it doesn't already exist:
 
-// Create an ACL record for the Client Callable Script Include
-var acl = new GlideRecord('sys_security_acl');
-acl.initialize();
-acl.setValue('name', 'ACL for ' + scriptIncludeName);
-acl.setValue('operation', 'execute');
-acl.setValue('script_include', scriptIncludeName);
-acl.setValue('script', 'current');
-acl.insert();
+javascript
+Copy code
+(function (finding, current) {
+    var tableName = current.name;
 
-// Attach the required roles to the ACL record
-for (var i = 0; i < requiredRoles.length; i++) {
-    var role = requiredRoles[i];
-    var aclRole = new GlideRecord('sys_security_acl_role');
-    aclRole.initialize();
-    aclRole.setValue('acl', acl.sys_id);
-    aclRole.setValue('role', role);
-    aclRole.insert();
-}
+    // Check if an ACL already exists for the table
+    var acl = new GlideRecord('sys_security_acl');
+    acl.addQuery('name', 'CONTAINS', tableName);
+    acl.query();
 
-gs.print('ACL created and roles attached for ' + scriptIncludeName);
-Please make sure to replace 'YourClientCallableScriptIncludeName' with the actual name of your Client Callable Script Include, and adjust the requiredRoles array to include the roles that should have access to it.
+    if (!acl.next()) {
+        // ACL doesn't exist, create a new one
+        var newAcl = new GlideRecord('sys_security_acl');
+        newAcl.initialize();
+        newAcl.setValue('name', tableName);
+        newAcl.setValue('description', 'ACL for ' + tableName);
+        newAcl.insert();
 
-After running this script, an ACL will be created for your Client Callable Script Include, and the specified roles will be granted access to it. This helps secure your Client Callable Script Include by restricting access to authorized users only.
+        // Log the finding
+        finding.setCurrentSource(current);
+        finding.increment();
+    }
+})(finding, current);
+This updated script creates a new ACL if one is not found for the specified table. It uses the initialize() method to set default values for the new ACL and then inserts it into the 'sys_security_acl' table.
+
+Make sure to thoroughly test any script in a non-production environment before deploying it to production. Also, ensure that the user running this script has the necessary permissions to create ACLs.
