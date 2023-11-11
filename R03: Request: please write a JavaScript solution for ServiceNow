@@ -1,12 +1,9 @@
-//ServiceNow Field: "Description"
+Please write a JavaScript solution for ServiceNow
 Rules for access control lists (ACLs) restrict access to data by requiring users to pass a set of requirements before they can interact with it, all client callable script includes should be secured with required roles.
 
-//ServiceNow Field: "Resolution Details"
 Any logged-in users with minimum snc_internal can access an unprotected CCSI by default. Attacker can run a GlideAjax on console or do a custom HTTP request xmlhttp.do and can execute functions defined in Client callable script include. Create ACL around script include with Type as "client_callable_script_include" and define required roles.
 
-//Request: please write a JavaScript solution for ServiceNow
-
-//Answer
+ChatGPT
 The provided JavaScript code is intended to create an access control rule (ACL) for a client callable script include in ServiceNow. The ACL checks whether a given client callable script include is protected by required roles. If not, it increments a finding and associates it with the current record.
 
 Here's a breakdown of the code:
