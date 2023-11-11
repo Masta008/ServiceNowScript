@@ -1,38 +1,48 @@
-//Step one : Presented the result Script from ServiceNow after the run of Instance Scan
-
-++Communitation with ChatGPT++
-
-//User 
-//Please program a JavaScript script solution for the following ServiceNow request:
-//ServiceNow Field: "Description"
+How can a developer resolve the following request from ServiceNow? 
 ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.
 
-//ServiceNow Field: "Resolution Details"
 ServiceNow has provided the ACL Assessment for Reports application to scan your instance and product an inventory of reports and users that will be affected when the Report View ACLs are enabled. 
 Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required. 
 
-//Answer
-To automate the ServiceNow request for enabling Report View ACLs, you can use JavaScript in a script include or background script. Below is a JavaScript script that simulates the steps needed to fulfill the request, including updating the "Description" and "Resolution Details" fields:
+(function (finding) {
 
-// User input: Specify the relevant table name and record sys_id
-var tableName = "incident"; // Replace with your table name
-var recordSysID = "your_record_sys_id"; // Replace with the actual record sys_id
+    if(!GlidePluginManager.isActive("sn_report_acl")){
+		finding.increment();
+	}
 
-// ServiceNow Field: "Description"
-var newDescription = "ServiceNow administrators need to enable Report View ACLs to ensure data remains secure. Report View ACLs provide control around who can view reports protected by the Report View ACL. If Report View ACLs are left disabled, users may have access to report data that they should not.";
+})(finding);
 
-// ServiceNow Field: "Resolution Details"
-var newResolutionDetails = "ServiceNow has provided the ACL Assessment for Reports application to scan your instance and produce an inventory of reports and users that will be affected when the Report View ACLs are enabled. Install the ACL Assessment for Reports application from the ServiceNow store. Security Admin Role is required.";
+ChatGPT
+It looks like you've provided a script that checks if the "sn_report_acl" plugin is active in ServiceNow. This script is part of the ACL Assessment for Reports application that ServiceNow administrators are required to install.
 
-// Update the incident record with the new information
-var gr = new GlideRecord(tableName);
-if (gr.get(recordSysID)) {
-    gr.setValue('description', newDescription);
-    gr.setValue('resolution_details', newResolutionDetails);
-    gr.update();
+Here are the steps to resolve the request:
 
-    gs.log("ServiceNow Request Updated: Report View ACLs Enabled");
-} else {
-    gs.log("ServiceNow Request Not Found");
-}
-Make sure to replace tableName and recordSysID with the appropriate values for your ServiceNow request. This script will update the "Description" and "Resolution Details" fields with the provided information. Please ensure that you have the necessary permissions to modify records in your ServiceNow instance when executing this script.
+Install the ACL Assessment for Reports Application:
+
+Go to the ServiceNow store and find the ACL Assessment for Reports application.
+Install the application in your ServiceNow instance.
+Make sure that you have the necessary permissions, and the Security Admin Role is required as mentioned.
+Run the ACL Assessment Script:
+
+Once the application is installed, navigate to the appropriate section where you can run or schedule scripts in ServiceNow.
+Paste the provided script into the script editor.
+Execute the script. This script checks if the "sn_report_acl" plugin is active.
+Review the Findings:
+
+After running the script, review the findings it produces. It seems like it increments a counter (finding.increment()) if the "sn_report_acl" plugin is not active.
+If the counter is incremented, it implies that the plugin is not active. You need to take action to activate it.
+Activate the "sn_report_acl" Plugin:
+
+Activate the "sn_report_acl" plugin in your ServiceNow instance.
+You may need to navigate to the ServiceNow Plugin Manager to find and activate the plugin.
+Re-run the Script:
+
+After activating the plugin, re-run the script to ensure that the "sn_report_acl" plugin is now active.
+Verify and Enable Report View ACLs:
+
+Once the plugin is active, use the ACL Assessment for Reports application to scan your instance and generate an inventory of reports and users that will be affected when Report View ACLs are enabled.
+Review the findings and ensure that the necessary configurations are in place to secure report data.
+Communicate Changes:
+
+If needed, communicate the changes to relevant stakeholders or users who may be affected by the activation of Report View ACLs.
+Remember to perform these steps in a controlled environment, possibly during a maintenance window, to avoid any disruptions to users. Always follow best practices and backup configurations before making significant changes in a production environment.
