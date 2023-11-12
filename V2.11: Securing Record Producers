@@ -3,6 +3,18 @@ If appropriate roles are not assigned to record producers then, an unauthorized 
 
 Record producers should be assigned appropriate role, record producer script should secure GlideRecord and/or GlideSystem API calls.
 
+(function(finding, current) {
+	var gr = new GlideRecord("sc_cat_item_user_criteria_mtom");
+	var id = current.getValue("sys_id");
+	gr.addQuery('sc_cat_item', id);
+	gr.addNotNullQuery('user_criteria');
+	gr.query();
+	if (!gr.next()) {
+		finding.setCurrentSource(current);
+		finding.increment();
+	}
+})(finding, current);
+
 ChatGPT
 To address the request from ServiceNow and ensure that unauthorized users cannot access sensitive information by directly navigating to the URL of a record producer, you can take the following steps:
 
